@@ -1,6 +1,9 @@
 # Rust
 target/
 
+# Drawio
+*.bkp
+
 # Vim
 *.swp
 *.swo

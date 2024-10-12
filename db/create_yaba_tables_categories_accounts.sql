@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Transaction (
 CREATE TABLE IF NOT EXISTS TransactionCategory (
 	CategoryID TINYINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	CategoryName VARCHAR(50) NOT NULL UNIQUE,
-	CategoryType ENUM('income','expense')
+	CategoryType ENUM('income','expense') NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Job (

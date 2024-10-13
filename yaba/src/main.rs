@@ -6,6 +6,8 @@ use rocket::fairing::{ self, AdHoc };
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
+use yaba::models::*;
+
 
 #[derive(Database)]
 #[database("yaba")]
@@ -19,7 +21,14 @@ fn get_trans() -> &'static str {
 }
 
 #[get("/category")]
-fn get_cat() -> &'static str {
+fn get_cat(mut db: Connection<Db>) -> &'static str {
+	use yaba::schema::TransactionCategory::dsl::*;
+
+	let results = TransactionCategory
+		.select(TransCat::as_select())
+		.load(&mut db);
+		//.expect("Error loading categories");
+
 	"TODO: get categories"	// TODO
 }
 

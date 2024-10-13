@@ -1,5 +1,6 @@
 // @generated automatically by Diesel CLI.
 
+/*
 pub mod sql_types {
     #[derive(diesel::sql_types::SqlType)]
     #[diesel(mysql_type(name = "Enum"))]
@@ -9,6 +10,7 @@ pub mod sql_types {
     #[diesel(mysql_type(name = "Enum"))]
     pub struct TransactionCategoryCategoryTypeEnum;
 }
+*/
 
 diesel::table! {
     CreditAccount (AccountID) {
@@ -49,16 +51,24 @@ diesel::table! {
     }
 }
 
+#[derive(diesel_derive_enum::DbEnum, Debug)]
+pub enum AccountTypeEnum {
+	Debit,
+	Savings,
+	Credit,
+}
+
 diesel::table! {
     use diesel::sql_types::*;
-    use super::sql_types::PaymentAccountAccountTypeEnum;
+	use super::AccountTypeEnumMapping;
+    //use super::sql_types::PaymentAccountAccountTypeEnum;
 
     PaymentAccount (AccountID) {
         AccountID -> Unsigned<Tinyint>,
         #[max_length = 50]
         AccountName -> Varchar,
         #[max_length = 7]
-        AccountType -> PaymentAccountAccountTypeEnum,
+        AccountType -> AccountTypeEnumMapping,//PaymentAccountAccountTypeEnum,
     }
 }
 
@@ -87,16 +97,23 @@ diesel::table! {
     }
 }
 
+#[derive(diesel_derive_enum::DbEnum, Debug)]
+pub enum CategoryTypeEnum {
+	Income,
+	Expense,
+}
+
 diesel::table! {
     use diesel::sql_types::*;
-    use super::sql_types::TransactionCategoryCategoryTypeEnum;
+    //use super::sql_types::TransactionCategoryCategoryTypeEnum;
+	use super::CategoryTypeEnumMapping;
 
     TransactionCategory (CategoryID) {
         CategoryID -> Unsigned<Tinyint>,
         #[max_length = 50]
         CategoryName -> Varchar,
         #[max_length = 7]
-        CategoryType -> TransactionCategoryCategoryTypeEnum,
+        CategoryType -> CategoryTypeEnumMapping,//TransactionCategoryCategoryTypeEnum,
     }
 }
 

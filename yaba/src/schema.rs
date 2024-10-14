@@ -1,16 +1,5 @@
 // @generated automatically by Diesel CLI.
 
-/*
-pub mod sql_types {
-    #[derive(diesel::sql_types::SqlType)]
-    #[diesel(mysql_type(name = "Enum"))]
-    pub struct PaymentAccountAccountTypeEnum;
-
-    #[derive(diesel::sql_types::SqlType)]
-    #[diesel(mysql_type(name = "Enum"))]
-    pub struct TransactionCategoryCategoryTypeEnum;
-}
-*/
 
 diesel::table! {
     CreditAccount (AccountID) {

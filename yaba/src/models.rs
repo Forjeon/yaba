@@ -11,21 +11,6 @@ use diesel::sql_types::*;
 use bigdecimal::BigDecimal;
 use time::Date;
 
-/*
-#[derive(diesel_derive_enum::DbEnum, Debug)]
-pub enum PaymentAccountTypeEnum {
-	Debit,
-	Savings,
-	Credit,
-}
-
-#[derive(diesel_derive_enum::DbEnum, Debug)]
-pub enum TransactionCategoryTypeEnum {
-	Income,
-	Expense,
-}
-*/
-
 
 #[derive(Debug, Queryable, Selectable)]//, Identifiable)]
 #[diesel(primary_key(AccountID))]

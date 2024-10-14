@@ -6,6 +6,7 @@ use rocket::fairing::{ self, AdHoc };
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
+use yaba::schema::*;
 use yaba::models::*;
 
 
@@ -44,6 +45,18 @@ async fn get_cat(mut db: Connection<Db>) -> String {
 	serde_json::to_string(&results).expect("Error serializing categories")
 }
 
+#[get("/category/full")]
+async fn get_cat_full(mut db: Connection<Db>) -> String {
+	let results = TransactionCategory::table
+		.left_join(ExpenseCategory::table)
+		.select(TransactionCategory::CategoryName, TransactionCategory::CategoryType, ExpenseCategory::MonthlyBudget)
+		.load::<(TransCat, ExpCat)>(&mut db)
+		.await
+		.expect("Error selecting join of categories to expense details");
+
+	serde_json::to_string(&results).expect("Error serializing full categories")	
+}
+
 #[get("/account")]
 fn get_acc() -> &'static str {
 	"TODO: get accounts"	// TODO
@@ -62,6 +75,6 @@ fn rocket() -> _ {
 	rocket::build()
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Migrations", run_migrations))
-		.mount("/", routes![index, home, get_trans, get_cat, get_acc])
+		.mount("/", routes![index, home, get_trans, get_cat, get_acc, get_cat_full])
 }
 

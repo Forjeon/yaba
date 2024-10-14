@@ -275,14 +275,15 @@
 
 	// Helper functions
 	async function getCategories() {
-		let x = "TESTING";
-		$.get('http://localhost:8000/category', function(result) {
-			x = JSON.parse(result)[1].CategoryName;
+		let categories = [];
+		await async function() {
+		return $.get('http://localhost:8000/category', function(result) {
+			let results_json = JSON.parse(result);
 			$("body").append(result);
-			$("body").append(JSON.parse(result)[0].CategoryName);
-			$("body").append(x);
+			categories = results_json;
 		}, 'text');
-		return x;
+		}();
+		return categories[2].CategoryName;
 	}
 
 

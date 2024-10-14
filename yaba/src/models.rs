@@ -15,31 +15,27 @@ use bigdecimal::BigDecimal;
 use time::Date;
 
 
+// Core structs
+
 #[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(AccountID))]
-#[diesel(table_name = crate::schema::CreditAccount)]
+#[diesel(primary_key(TransactionID))]
+#[diesel(table_name = crate::schema::Transaction)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct CredAcc {
-    pub AccountID: u8,
-    pub CreditLimit: BigDecimal,
+pub struct Trans {
+    pub TransactionID: u32,
+    pub TransactionDate: Date,
+    pub Description: String,
+    pub Amount: BigDecimal,
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(primary_key(CategoryID))]
-#[diesel(table_name = crate::schema::ExpenseCategory)]
+#[diesel(table_name = crate::schema::TransactionCategory)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct ExpCat {
+pub struct TransCat {
     pub CategoryID: u8,
-    pub MonthlyBudget: BigDecimal,
-}
-
-#[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(CategoryID))]
-#[diesel(table_name = crate::schema::IncomeCategory)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct IncCat {
-    pub CategoryID: u8,
-    pub MonthlyExpected: BigDecimal,
+    pub CategoryName: String,
+    pub CategoryType: CategoryTypeEnum,
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
@@ -55,15 +51,6 @@ pub struct JobStruct {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(CategoryID))]
-#[diesel(table_name = crate::schema::JobIncome)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct JobStructInc {
-    pub CategoryID: u8,
-    pub JobID: u8,
-}
-
-#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(primary_key(AccountID))]
 #[diesel(table_name = crate::schema::PaymentAccount)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
@@ -71,6 +58,55 @@ pub struct PayAcc {
     pub AccountID: u8,
     pub AccountName: String,
     pub AccountType: AccountTypeEnum,
+}
+
+// Category interface structs
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(primary_key(TransactionID))]
+#[diesel(table_name = crate::schema::TransactionInstanceCategory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct TransInstCat {
+    pub TransactionID: u32,
+    pub CategoryID: u8,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(primary_key(CategoryID))]
+#[diesel(table_name = crate::schema::IncomeCategory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct IncCat {
+    pub CategoryID: u8,
+    pub MonthlyExpected: BigDecimal,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(primary_key(CategoryID))]
+#[diesel(table_name = crate::schema::ExpenseCategory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct ExpCat {
+    pub CategoryID: u8,
+    pub MonthlyBudget: BigDecimal,
+}
+
+// Account interface structs
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(primary_key(TransactionID))]
+#[diesel(table_name = crate::schema::TransactionAccount)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct TransAcc {
+    pub TransactionID: u32,
+    pub AccountID: u8,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(primary_key(AccountID))]
+#[diesel(table_name = crate::schema::CreditAccount)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct CredAcc {
+    pub AccountID: u8,
+    pub CreditLimit: BigDecimal,
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
@@ -84,41 +120,15 @@ pub struct SavAcc {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(TransactionID))]
-#[diesel(table_name = crate::schema::Transaction)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct Trans {
-    pub TransactionID: u32,
-    pub TransactionDate: Date,
-    pub Description: String,
-    pub Amount: BigDecimal,
-}
-
-#[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(TransactionID))]
-#[diesel(table_name = crate::schema::TransactionAccount)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct TransAcc {
-    pub TransactionID: u32,
-    pub AccountID: u8,
-}
-
-#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(primary_key(CategoryID))]
-#[diesel(table_name = crate::schema::TransactionCategory)]
+#[diesel(table_name = crate::schema::JobIncome)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct TransCat {
+pub struct JobStructInc {
     pub CategoryID: u8,
-    pub CategoryName: String,
-    pub CategoryType: CategoryTypeEnum,
+    pub JobID: u8,
 }
 
-#[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(TransactionID))]
-#[diesel(table_name = crate::schema::TransactionInstanceCategory)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct TransInstCat {
-    pub TransactionID: u32,
-    pub CategoryID: u8,
-}
+// Yaba select structs
+
+// TODO
 

@@ -4,73 +4,7 @@
 use serde::Serialize;
 
 
-diesel::table! {
-    CreditAccount (AccountID) {
-        AccountID -> Unsigned<Tinyint>,
-        CreditLimit -> Decimal,
-    }
-}
-
-diesel::table! {
-    ExpenseCategory (CategoryID) {
-        CategoryID -> Unsigned<Tinyint>,
-        MonthlyBudget -> Decimal,
-    }
-}
-
-diesel::table! {
-    IncomeCategory (CategoryID) {
-        CategoryID -> Unsigned<Tinyint>,
-        MonthlyExpected -> Decimal,
-    }
-}
-
-diesel::table! {
-    Job (JobID) {
-        JobID -> Unsigned<Tinyint>,
-        #[max_length = 50]
-        JobName -> Varchar,
-        Wage -> Decimal,
-        ExpectedMonthlyHours -> Unsigned<Tinyint>,
-        ExpectedMonthlyMissHours -> Unsigned<Tinyint>,
-    }
-}
-
-diesel::table! {
-    JobIncome (CategoryID) {
-        CategoryID -> Unsigned<Tinyint>,
-        JobID -> Unsigned<Tinyint>,
-    }
-}
-
-#[derive(diesel_derive_enum::DbEnum, Debug, Serialize)]
-pub enum AccountTypeEnum {
-	Debit,
-	Savings,
-	Credit,
-}
-
-diesel::table! {
-    use diesel::sql_types::*;
-	use super::AccountTypeEnumMapping;
-    //use super::sql_types::PaymentAccountAccountTypeEnum;
-
-    PaymentAccount (AccountID) {
-        AccountID -> Unsigned<Tinyint>,
-        #[max_length = 50]
-        AccountName -> Varchar,
-        #[max_length = 7]
-        AccountType -> AccountTypeEnumMapping,//PaymentAccountAccountTypeEnum,
-    }
-}
-
-diesel::table! {
-    SavingsAccount (AccountID, MinBalanceForRate) {
-        AccountID -> Unsigned<Tinyint>,
-        MinBalanceForRate -> Decimal,
-        InterestRate -> Decimal,
-    }
-}
+// Core tables
 
 diesel::table! {
     Transaction (TransactionID) {
@@ -79,13 +13,6 @@ diesel::table! {
         #[max_length = 200]
         Description -> Varchar,
         Amount -> Decimal,
-    }
-}
-
-diesel::table! {
-    TransactionAccount (TransactionID) {
-        TransactionID -> Unsigned<Integer>,
-        AccountID -> Unsigned<Tinyint>,
     }
 }
 
@@ -110,11 +37,92 @@ diesel::table! {
 }
 
 diesel::table! {
+    Job (JobID) {
+        JobID -> Unsigned<Tinyint>,
+        #[max_length = 50]
+        JobName -> Varchar,
+        Wage -> Decimal,
+        ExpectedMonthlyHours -> Unsigned<Tinyint>,
+        ExpectedMonthlyMissHours -> Unsigned<Tinyint>,
+    }
+}
+
+#[derive(diesel_derive_enum::DbEnum, Debug, Serialize)]
+pub enum AccountTypeEnum {
+	Debit,
+	Savings,
+	Credit,
+}
+
+diesel::table! {
+    use diesel::sql_types::*;
+	use super::AccountTypeEnumMapping;
+    //use super::sql_types::PaymentAccountAccountTypeEnum;
+
+    PaymentAccount (AccountID) {
+        AccountID -> Unsigned<Tinyint>,
+        #[max_length = 50]
+        AccountName -> Varchar,
+        #[max_length = 7]
+        AccountType -> AccountTypeEnumMapping,//PaymentAccountAccountTypeEnum,
+    }
+}
+
+// Category interface tables
+
+diesel::table! {
     TransactionInstanceCategory (TransactionID) {
         TransactionID -> Unsigned<Integer>,
         CategoryID -> Unsigned<Tinyint>,
     }
 }
+
+diesel::table! {
+    IncomeCategory (CategoryID) {
+        CategoryID -> Unsigned<Tinyint>,
+        MonthlyExpected -> Decimal,
+    }
+}
+
+diesel::table! {
+    ExpenseCategory (CategoryID) {
+        CategoryID -> Unsigned<Tinyint>,
+        MonthlyBudget -> Decimal,
+    }
+}
+
+// Account integration tables
+
+diesel::table! {
+    TransactionAccount (TransactionID) {
+        TransactionID -> Unsigned<Integer>,
+        AccountID -> Unsigned<Tinyint>,
+    }
+}
+
+diesel::table! {
+    CreditAccount (AccountID) {
+        AccountID -> Unsigned<Tinyint>,
+        CreditLimit -> Decimal,
+    }
+}
+
+diesel::table! {
+    SavingsAccount (AccountID, MinBalanceForRate) {
+        AccountID -> Unsigned<Tinyint>,
+        MinBalanceForRate -> Decimal,
+        InterestRate -> Decimal,
+    }
+}
+
+diesel::table! {
+    JobIncome (CategoryID) {
+        CategoryID -> Unsigned<Tinyint>,
+        JobID -> Unsigned<Tinyint>,
+    }
+}
+
+// Table joinability
 
 diesel::joinable!(CreditAccount -> PaymentAccount (AccountID));
 diesel::joinable!(ExpenseCategory -> TransactionCategory (CategoryID));

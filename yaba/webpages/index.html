@@ -29,9 +29,9 @@
 
 				<!-- Presets and apply buttons -->
 				<div>
-					<button type="button" onclick="resetBudgetToCurrMonth();">Current Month</button>
-					<button type="button" onclick="resetBudgetToCurrYear();">Current Year</button>
-					<button type="button" onclick="generateBudgetReport();">View Report</button>
+					<button type="button" onclick="setBudgetToCurrMonth();">Current Month</button>
+					<button type="button" onclick="setBudgetToCurrYear();">Current Year</button>
+					<button type="button" onclick="populateBudget();">View Report</button>
 				</div>
 			</div>
 			<hr>
@@ -44,7 +44,7 @@
 						<th>Expected for Range</th>
 						<th>Value for Range</th>
 					</tr>
-					<!-- Rows will be filled in here by generateBudgetReport() -->
+					<!-- Rows will be filled in here by populateBudget() -->
 				</table>
 			</div>
 			<hr>
@@ -57,7 +57,7 @@
 						<th>Credit Limit</th>
 						<th>Balance for Range</th>
 					</tr>
-					<!-- Rows will be filled in here by generateBudgetReport() -->
+					<!-- Rows will be filled in here by populateBudget() -->
 				</table>
 			</div>
 			<hr>
@@ -217,7 +217,7 @@
 			<div>
 				<button type="button" onclick="resetListFilter();">Reset filter</button>
 				<button type="button" onclick="resetListSort();">Reset sort</button>
-				<button type="button" onclick="refreshList();">Refresh list</button>
+				<button type="button" onclick="populateList();">Refresh list</button>
 			</div>
 			<hr>
 
@@ -231,6 +231,7 @@
 						<th>Account</th>
 						<th>Amount</th>
 					</tr>
+					<!-- Rows will be filled in by populateList() -->
 				</table>
 			</div>
 		</div>
@@ -241,10 +242,64 @@
 
 
 <script>
-	async function testFunc() {
-		$.get('http://localhost:8000/transaction', function(result) {
+	// Budget report functions
+	function setBudgetRangeToCurrMonth() {
+	}
+
+
+	function setBudgetRangeToCurrYear() {
+	}
+
+
+	function populateBudget() {
+	}
+
+
+	// Log transaction functions
+	function logTransaction() {
+	}
+
+
+	// Transaction list functions
+	function resetListFilter() {
+	}
+
+
+	function resetListSort() {
+	}
+
+
+	function populateList() {
+	}
+
+
+	// Helper functions
+	async function getCategories() {
+		let x = "TESTING";
+		$.get('http://localhost:8000/category', function(result) {
+			x = JSON.parse(result)[1].CategoryName;
 			$("body").append(result);
+			$("body").append(JSON.parse(result)[0].CategoryName);
+			$("body").append(x);
 		}, 'text');
+		return x;
+	}
+
+
+	function populateCategoryOptions() {
+	}
+
+
+	async function getAccounts() {
+	}
+
+
+	function populateAccountOptions() {
+	}
+
+
+	async function testFunc() {
+		$("body").append(await getCategories());
 	}
 	$(testFunc);
 </script>

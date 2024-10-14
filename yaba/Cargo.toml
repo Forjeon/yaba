@@ -7,8 +7,10 @@ edition = "2021"
 rocket = "0.5.1"
 diesel = { version = "2", features = ["numeric", "time"] }
 diesel-derive-enum = { version = "2.1.0", features = ["mysql"] }
-time = "0.3.36"
-bigdecimal = "0.4.5"
+time = { version = "0.3.36", features = ["serde"] }
+bigdecimal = { version = "0.4.5", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [dependencies.rocket_db_pools]
 version = "0.2.0"

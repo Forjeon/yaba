@@ -152,6 +152,7 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -494,6 +495,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b42b6fa04a440b495c8b04d0e71b707c585f83cb9cb28cf8cd0d976c315e31b4"
 dependencies = [
  "powerfmt",
+ "serde",
 ]
 
 [[package]]
@@ -2967,6 +2969,8 @@ dependencies = [
  "diesel-derive-enum",
  "rocket",
  "rocket_db_pools",
+ "serde",
+ "serde_json",
  "time",
 ]
 

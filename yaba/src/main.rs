@@ -25,11 +25,6 @@ async fn home() -> Option<NamedFile> {
 	NamedFile::open("webpages/index.html").await.ok()
 }
 
-#[get("/index.css")]
-async fn home_css() -> Option<NamedFile> {
-	NamedFile::open("webpages/index.css").await.ok()
-}
-
 #[get("/transaction")]
 fn get_trans() -> &'static str {
 	"TODO: get transactions"	// TODO
@@ -37,17 +32,16 @@ fn get_trans() -> &'static str {
 
 // GET requests
 #[get("/category")]
-async fn get_cat(mut db: Connection<Db>) -> String {//&'static str {
+async fn get_cat(mut db: Connection<Db>) -> String {
 	use yaba::schema::TransactionCategory::dsl::*;
 
 	let results = TransactionCategory
 		.select(TransCat::as_select())
-		.load(&mut db).await.expect("UhOH!");
-	println!("TESTING: {:?}", results);
-		//.expect("Error loading categories");
+		.load(&mut db)
+		.await
+		.expect("Error selecting categories!");
 
-	format!("{:?}", results)
-	//"TODO: get categories"	// TODO
+	serde_json::to_string(&results).expect("Error serializing categories")
 }
 
 #[get("/account")]

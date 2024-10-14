@@ -1,6 +1,9 @@
 // @generated automatically by Diesel CLI.
 
 
+use serde::Serialize;
+
+
 diesel::table! {
     CreditAccount (AccountID) {
         AccountID -> Unsigned<Tinyint>,
@@ -40,7 +43,7 @@ diesel::table! {
     }
 }
 
-#[derive(diesel_derive_enum::DbEnum, Debug)]
+#[derive(diesel_derive_enum::DbEnum, Debug, Serialize)]
 pub enum AccountTypeEnum {
 	Debit,
 	Savings,
@@ -86,7 +89,7 @@ diesel::table! {
     }
 }
 
-#[derive(diesel_derive_enum::DbEnum, Debug)]
+#[derive(diesel_derive_enum::DbEnum, Debug, Serialize)]
 pub enum CategoryTypeEnum {
 	Income,
 	Expense,

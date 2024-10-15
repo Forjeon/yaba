@@ -12,7 +12,7 @@ use diesel::sql_types::*;
 use serde::Serialize;
 
 use bigdecimal::BigDecimal;
-use time::Date;
+use chrono::NaiveDate;
 
 
 // Core structs
@@ -23,7 +23,7 @@ use time::Date;
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
 pub struct Trans {
     pub TransactionID: u32,
-    pub TransactionDate: Date,
+    pub TransactionDate: NaiveDate,
     pub Description: String,
     pub Amount: BigDecimal,
 }

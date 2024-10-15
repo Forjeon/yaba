@@ -50,6 +50,20 @@ async fn get_acc_names(mut db:Connection<Db>) -> String {
 	serde_json::to_string(&results).expect("Error serializing account names")
 }
 
+#[get("/list")]
+async fn get_trans_list(mut db:Connection<Db>) -> String {
+		//date, desc, cat, acc, amt
+	let results = Transaction::table
+		.left_join(TransactionInstanceCategory::table.left_join(TransactionCategory::table))
+		.left_join(TransactionAccount::table.left_join(PaymentAccount::table))
+		.select((Trans::as_select(), Option::<TransInstCat>::as_select(), Option::<TransCat>::as_select(), Option::<TransAcc>::as_select(), Option::<PayAcc>::as_select()))
+		.load::<(Trans, Option::<TransInstCat>, Option::<TransCat>, Option::<TransAcc>, Option::<PayAcc>)>(&mut db)
+		.await
+		.expect("Error selecting join of categories to expense details");
+
+	serde_json::to_string(&results).expect("Error serializing transaction list")
+}
+
 #[get("/")]
 async fn get_cat_list(mut db: Connection<Db>) -> String {
 	let results = TransactionCategory::table
@@ -76,5 +90,6 @@ fn rocket() -> _ {
 		.mount("/", routes![index, home])
 		.mount("/category", routes![get_cat_names, get_cat_list])
 		.mount("/account", routes![get_acc_names])
+		.mount("/transaction", routes![get_trans_list])
 }
 

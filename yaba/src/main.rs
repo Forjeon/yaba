@@ -64,21 +64,21 @@ async fn get_trans_list(mut db:Connection<Db>) -> String {
 	serde_json::to_string(&results).expect("Error serializing transaction list")
 }
 
-#[get("/")]
-async fn get_cat_list(mut db: Connection<Db>) -> String {
-	let results = TransactionCategory::table
-		.left_join(ExpenseCategory::table)
-		.left_join(IncomeCategory::table)
-		.select((TransCat_CatList::as_select(), Option::<ExpCat_CatList>::as_select(), Option::<IncCat_CatList>::as_select()))
-		.load::<(TransCat_CatList, Option<ExpCat_CatList>, Option::<IncCat_CatList>)>(&mut db)
-		.await
-		.expect("Error selecting join of categories to expense details");
 
-	serde_json::to_string(&results).expect("Error serializing full categories")	
+// Transaction logging
+#[post("/")]
+async fn log_trans(mut db: Connection<Db>) -> QueryResult<String> {
+	Ok("WORKING".into())
 }
 
 
-async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
+// Transaction deletion
+// TODO: UI design + programming, future milestone
+
+
+
+// Backend setup functions
+async fn fetch_db(rocket: Rocket<Build>) -> fairing::Result {
 	if let Some(db) = Db::fetch(&rocket) { Ok(rocket) } else { Err(rocket) }
 }
 
@@ -86,9 +86,9 @@ async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
 fn rocket() -> _ {
 	rocket::build()
 		.attach(Db::init())
-		.attach(AdHoc::try_on_ignite("DB Migrations", run_migrations))
+		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
-		.mount("/category", routes![get_cat_names, get_cat_list])
+		.mount("/category", routes![get_cat_names])
 		.mount("/account", routes![get_acc_names])
 		.mount("/transaction", routes![get_trans_list])
 }

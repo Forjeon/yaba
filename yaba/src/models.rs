@@ -130,5 +130,28 @@ pub struct JobStructInc {
 
 // Yaba select structs
 
-// TODO
+	// Category
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(table_name = crate::schema::TransactionCategory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct TransCat_CatList {
+	pub CategoryName: String,
+    pub CategoryType: CategoryTypeEnum,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(table_name = crate::schema::IncomeCategory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct IncCat_CatList {
+	pub MonthlyExpected: BigDecimal,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(primary_key(CategoryID))]
+#[diesel(table_name = crate::schema::ExpenseCategory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct ExpCat_CatList {
+    pub MonthlyBudget: BigDecimal,
+}
 

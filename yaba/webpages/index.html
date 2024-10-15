@@ -44,6 +44,11 @@
 						<th>Expected for Range</th>
 						<th>Value for Range</th>
 					</tr>
+					<tr>
+						<td>DUMCAT</td>
+						<td>DUMEXP</td>
+						<td>DUMVAL</td>
+					</tr>
 					<!-- Rows will be filled in here by populateBudget() -->
 				</table>
 			</div>
@@ -56,6 +61,11 @@
 						<th>Credit Account</th>
 						<th>Credit Limit</th>
 						<th>Balance for Range</th>
+					</tr>
+					<tr>
+						<td>DUMACC</td>
+						<td>DUMLIM</td>
+						<td>DUMBAL</td>
 					</tr>
 					<!-- Rows will be filled in here by populateBudget() -->
 				</table>
@@ -84,19 +94,12 @@
 
 					<label for="new-category">Category: </label>
 					<select id="new-category" name="new-category">
-						<option value="" selected="selected"></option>
-						<option value="DUMMY1">DUMMY1</option>
-						<option value="DUMMY2">DUMMY2</option>
-						<option value="DUMMY3">DUMMY3</option>
 						<!-- Category options will be populated from db -->
 					</select>
 
 					<label for="new-account">Account: </label>
 					<select id="new-account" name="new-account">
 						<option value="" selected="selected"></option>
-						<option value="DUMMY1">DUMMY1</option>
-						<option value="DUMMY2">DUMMY2</option>
-						<option value="DUMMY3">DUMMY3</option>
 						<!-- Account options will be populated from db -->
 					</select>
 				</div>
@@ -140,9 +143,6 @@
 						<label for="filter-category">Category: </label>
 						<select id="filter-category" name="filter-category">
 							<option value="" selected="selected">All</option>
-							<option value="DUMMY1">DUMMY1</option>
-							<option value="DUMMY2">DUMMY2</option>
-							<option value="DUMMY3">DUMMY3</option>
 							<!-- Category options will be populated from db -->
 						</select>
 					</div>
@@ -152,9 +152,6 @@
 						<label for="filter-account">Account: </label>
 						<select id="filter-account" name="filter-account">
 							<option value="" selected="selected">All</option>
-							<option value="DUMMY1">DUMMY1</option>
-							<option value="DUMMY2">DUMMY2</option>
-							<option value="DUMMY3">DUMMY3</option>
 							<!-- Account options will be populated from db -->
 						</select>
 					</div>
@@ -231,6 +228,13 @@
 						<th>Account</th>
 						<th>Amount</th>
 					</tr>
+					<tr>
+						<td>DUMDAT</td>
+						<td>DUMDES</td>
+						<td>DUMCAT</td>
+						<td>DUMACC</td>
+						<td>DUMAMT</td>
+					</tr>
 					<!-- Rows will be filled in by populateList() -->
 				</table>
 			</div>
@@ -251,7 +255,7 @@
 	}
 
 
-	function populateBudget() {
+	async function populateBudget() {
 	}
 
 
@@ -269,39 +273,83 @@
 	}
 
 
-	function populateList() {
+	async function populateList() {
 	}
 
 
 	// Helper functions
+	/*
 	async function getCategories() {
-		let categories = [];
+		let categories = new Array();
 		await async function() {
 		return $.get('http://localhost:8000/category', function(result) {
 			let results_json = JSON.parse(result);
-			$("body").append(result);
-			categories = results_json;
+			for (let category of results_json) {
+				if (category[0].CategoryType == "Income") {
+					categories.push([category[0].CategoryName, parseFloat(category[2].MonthlyExpected)])
+				} else {
+					categories.push([category[0].CategoryName, -1 * parseFloat(category[1].MonthlyBudget)])
+				}
+			}
 		}, 'text');
 		}();
-		return categories[2].CategoryName;
+		return categories;
+	}
+	*/
+	async function getCategoryNames() {
+		let catNames = new Array();
+		await async function() {
+			return $.get('http://localhost:8000/category/names', function(result) {
+				for (let category of JSON.parse(result)) {
+					catNames.push(category.CategoryName);
+				}
+			}, 'text');
+		}();
+		return catNames;
 	}
 
 
-	function populateCategoryOptions() {
+	async function populateCategoryOptions() {
+		let categoryNames = await getCategoryNames();
+		for (let i = 0; i < categoryNames.length; ++i) {
+			let name = categoryNames[i];
+			// Log transaction
+			$('#new-category').append(`<option value="${name}">${name}</option>`);
+			// Transaction list filter
+			$('#filter-category').append(`<option value="${name}">${name}</option>`);
+		}
 	}
 
 
-	async function getAccounts() {
+	async function getAccountNames() {
+		let accNames = new Array();
+		await async function() {
+			return $.get('http://localhost:8000/account/names', function(result) {
+				for (let account of JSON.parse(result)) {
+					accNames.push(account.AccountName);
+				}
+			}, 'text');
+		}();
+		return accNames;
 	}
 
 
-	function populateAccountOptions() {
+	async function populateAccountOptions() {
+		let accountNames = await getAccountNames();
+		for (let i = 0; i < accountNames.length; ++i) {
+			let name = accountNames[i];
+			// Log transaction
+			$('#new-account').append(`<option value="${name}">${name}</option>`);
+			// Transaction list filter
+			$('#filter-account').append(`<option value="${name}">${name}</option>`);
+		}
 	}
 
 
-	async function testFunc() {
-		$("body").append(await getCategories());
+	async function loadPage() {
+		populateCategoryOptions();
+		populateAccountOptions();
 	}
-	$(testFunc);
+	$(loadPage);
 </script>
 

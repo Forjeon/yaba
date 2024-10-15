@@ -28,6 +28,28 @@ async fn home() -> Option<NamedFile> {
 
 
 // GET requests
+#[get("/names")]
+async fn get_cat_names(mut db:Connection<Db>) -> String {
+	let results = TransactionCategory::table
+		.select(TransCat::as_select())
+		.load(&mut db)
+		.await
+		.expect("Error selecting category names");
+
+	serde_json::to_string(&results).expect("Error serializing category names")
+}
+
+#[get("/names")]
+async fn get_acc_names(mut db:Connection<Db>) -> String {
+	let results = PaymentAccount::table
+		.select(PayAcc::as_select())
+		.load(&mut db)
+		.await
+		.expect("Error selecting account names");
+
+	serde_json::to_string(&results).expect("Error serializing account names")
+}
+
 #[get("/")]
 async fn get_cat_list(mut db: Connection<Db>) -> String {
 	let results = TransactionCategory::table
@@ -52,6 +74,7 @@ fn rocket() -> _ {
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Migrations", run_migrations))
 		.mount("/", routes![index, home])
-		.mount("/category", routes![get_cat_list])
+		.mount("/category", routes![get_cat_names, get_cat_list])
+		.mount("/account", routes![get_acc_names])
 }
 

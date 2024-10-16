@@ -2,6 +2,7 @@
 
 
 #![allow(non_snake_case)]
+#![allow(non_camel_case_types)]
 #![allow(unused)]
 #![allow(clippy::all)]
 
@@ -11,7 +12,7 @@ use crate::schema::*;
 use diesel::prelude::*;
 use diesel::sql_types::*;
 
-use serde::Serialize;
+use serde::{ Deserialize, Serialize };
 
 use bigdecimal::BigDecimal;
 use chrono::NaiveDate;
@@ -64,7 +65,7 @@ pub struct PayAcc {
 
 // Category interface structs
 
-#[derive(Debug, Queryable, Selectable, Serialize)]
+#[derive(Debug, Insertable, Queryable, Selectable, Serialize)]
 #[diesel(primary_key(TransactionID))]
 #[diesel(table_name = crate::schema::TransactionInstanceCategory)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
@@ -93,7 +94,7 @@ pub struct ExpCat {
 
 // Account interface structs
 
-#[derive(Debug, Queryable, Selectable, Serialize)]
+#[derive(Debug, Insertable, Queryable, Selectable, Serialize)]
 #[diesel(primary_key(TransactionID))]
 #[diesel(table_name = crate::schema::TransactionAccount)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
@@ -128,6 +129,27 @@ pub struct SavAcc {
 pub struct JobStructInc {
     pub CategoryID: u8,
     pub JobID: u8,
+}
+
+
+// Yaba transaction logging
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Trans_NewData {
+	pub date: NaiveDate,
+	pub desc: String,
+	pub cat: u8,
+	pub acc: u8,
+	pub amt: BigDecimal,
+}
+
+#[derive(Debug, Insertable)]
+#[diesel(table_name = crate::schema::Transaction)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct Trans_Insert {
+    pub TransactionDate: NaiveDate,
+    pub Description: String,
+    pub Amount: BigDecimal,
 }
 
 // Yaba select structs

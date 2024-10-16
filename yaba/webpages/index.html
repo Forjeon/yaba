@@ -94,6 +94,7 @@
 
 					<label for="new-category">Category: </label>
 					<select id="new-category" name="new-category">
+						<option value="" selected="selected"></option>
 						<!-- Category options will be populated from db -->
 					</select>
 
@@ -253,7 +254,42 @@
 
 
 	// Log transaction functions
-	function logTransaction() {
+	async function logTransaction() {
+		// Verify values
+		$newTransDate = $("#new-date").val();
+		$newTransDesc = $("#new-description").val();
+		$newTransCat = $("#new-category").val();
+		$newTransAcc = $("#new-account").val();
+		$newTransAmt = Math.round($("#new-amount").val() * 100) / 100;
+		if ($newTransDate == "") {
+			alert("Must enter new transaction date");
+		}
+		else if ($newTransDesc == "") {
+			alert("Must enter new transaction description");
+		}
+		else if ($newTransCat == "") {
+			alert("Must select new transaction category");
+		}
+		else if ($newTransAcc == "") {
+			alert("Must select new transaction account");
+		}
+		else if ($newTransAmt <= 0) {
+			alert("New transaction amount must be positive and have no more than 2 decimal places");
+		}
+		else {
+			await function() {
+				return $.ajax({
+					type: 'POST',
+					url: 'http://localhost:8000/transaction',
+					data: JSON.stringify({date: $newTransDate, desc: $newTransDesc, cat: Number($newTransCat), acc: Number($newTransAcc), amt: $newTransAmt}),
+					success: function(data, status) {
+						alert("Data: " + data + "\nStatus: " + status);
+					},
+					contentType: 'application/json',
+					dataType: 'json'
+				});
+			}();
+		}
 	}
 
 
@@ -287,70 +323,54 @@
 
 
 	// Helper functions
-	/*
 	async function getCategories() {
 		let categories = new Array();
 		await async function() {
-		return $.get('http://localhost:8000/category', function(result) {
-			let results_json = JSON.parse(result);
-			for (let category of results_json) {
-				if (category[0].CategoryType == "Income") {
-					categories.push([category[0].CategoryName, parseFloat(category[2].MonthlyExpected)])
-				} else {
-					categories.push([category[0].CategoryName, -1 * parseFloat(category[1].MonthlyBudget)])
-				}
-			}
-		}, 'text');
-		}();
-		return categories;
-	}
-	*/
-	async function getCategoryNames() {
-		let catNames = new Array();
-		await async function() {
-			return $.get('http://localhost:8000/category/names', function(result) {
+			return $.get('http://localhost:8000/category', function(result) {
 				for (let category of JSON.parse(result)) {
-					catNames.push(category.CategoryName);
+					categories.push([category.CategoryID, category.CategoryName])
 				}
 			}, 'text');
 		}();
-		return catNames;
+		return categories;
 	}
 
 
 	async function populateCategoryOptions() {
-		let categoryNames = await getCategoryNames();
-		for (let i = 0; i < categoryNames.length; ++i) {
-			let name = categoryNames[i];
+		let categories = await getCategories();
+		for (let i = 0; i < categories.length; ++i) {
+			let id = categories[i][0];
+			let name = categories[i][1];
 			// Log transaction
-			$('#new-category').append(`<option value="${name}">${name}</option>`);
+			$('#new-category').append(`<option value="${id}">${name}</option>`);
 			// Transaction list filter
-			$('#filter-category').append(`<option value="${name}">${name}</option>`);
+			$('#filter-category').append(`<option value="${id}">${name}</option>`);
 		}
 	}
 
 
-	async function getAccountNames() {
-		let accNames = new Array();
+	async function getAccounts() {
+		let accs = new Array();
 		await async function() {
-			return $.get('http://localhost:8000/account/names', function(result) {
+			return $.get('http://localhost:8000/account', function(result) {
 				for (let account of JSON.parse(result)) {
-					accNames.push(account.AccountName);
+					accs.push([account.AccountID, account.AccountName]);
 				}
 			}, 'text');
 		}();
-		return accNames;
+		return accs;
 	}
 
 
 	async function populateAccountOptions() {
-		let accountNames = await getAccountNames();
-		for (let i = 0; i < accountNames.length; ++i) {
-			let name = accountNames[i];
+		let accounts = await getAccounts();
+		for (let i = 0; i < accounts.length; ++i) {
+			let id = accounts[i][0];
+			let name = accounts[i][1];
 			// Log transaction
-			$('#new-account').append(`<option value="${name}">${name}</option>`);
+			$('#new-account').append(`<option value="${id}">${name}</option>`);
 			// Transaction list filter
-			$('#filter-account').append(`<option value="${name}">${name}</option>`);
+			$('#filter-account').append(`<option value="${id}">${name}</option>`);
 		}
 	}
 

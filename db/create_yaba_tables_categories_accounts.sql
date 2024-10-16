@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS Transaction (
 	TransactionID INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	TransactionDate DATE NOT NULL,
 	Description VARCHAR(200) NOT NULL,
-	Amount DECIMAL(10,2) NOT NULL
+	Amount DECIMAL(10,2) NOT NULL,
+	UNIQUE (TransactionDate, Description, Amount)
 );
 
 CREATE TABLE IF NOT EXISTS TransactionCategory (

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Yaba ver0.1.0</title>
+		<!-- CSS in future version (figure out Rocket routing for CSS?) <link href="index.css" rel="stylesheet"> -->
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+		<!-- jQuery script loader? -->
+	</head>
+
+	<body>
+<!-- Yaba title and version -->
+		<h2 style="margin: 0.5em">Yaba ver0.1.0</h2>
+
+
+<!-- Budget report section -->
+		<hr>
+		<hr>
+		<div style="margin: 0.5em">
+			<!-- Report control -->
+			<div>
+				<!-- Date range input -->
+				<div>
+					<label for="budget-start-date">Budget report from </label>
+					<input type="date" id="budget-start-date" name="budget-start-date">
+
+					<label for="budget-end-date">to </label>
+					<input type="date" id="budget-end-date" name="budget-end-date">
+				</div>
+
+				<!-- Presets and apply buttons -->
+				<div>
+					<button type="button" onclick="setBudgetToCurrMonth();">Current Month</button>
+					<button type="button" onclick="setBudgetToCurrYear();">Current Year</button>
+					<button type="button" onclick="populateBudget();">View Report</button>
+				</div>
+			</div>
+			<hr>
+
+			<!-- Budget table -->
+			<div>
+				<table id="budget-report-table">
+					<tr>
+						<th>Category</th>
+						<th>Expected for Range</th>
+						<th>Value for Range</th>
+					</tr>
+					<tr>
+						<td>DUMCAT</td>
+						<td>DUMEXP</td>
+						<td>DUMVAL</td>
+					</tr>
+					<!-- Rows will be filled in here by populateBudget() -->
+				</table>
+			</div>
+			<hr>
+
+			<!-- Credit report -->
+			<div>
+				<table id="credit-report-table">
+					<tr>
+						<th>Credit Account</th>
+						<th>Credit Limit</th>
+						<th>Balance for Range</th>
+					</tr>
+					<tr>
+						<td>DUMACC</td>
+						<td>DUMLIM</td>
+						<td>DUMBAL</td>
+					</tr>
+					<!-- Rows will be filled in here by populateBudget() -->
+				</table>
+			</div>
+			<hr>
+
+			<!-- Profit report -->
+			<div>
+				<p>Profit for range: $<span id="profit-report-value"></span></p>
+			</div>
+		</div>
+		<hr>
+		<hr>
+
+
+<!-- Log transaction section -->
+		<div style="margin: 0.5em">
+			<button type="button" onclick="logTransaction();">Log Transaction</button>
+			
+			<!-- Transaction info -->
+			<div>
+				<!-- Date, category, account -->
+				<div>
+					<label for="new-date">Date: </label>
+					<input type="date" id="new-date" name="new-date">
+
+					<label for="new-category">Category: </label>
+					<select id="new-category" name="new-category">
+						<option value="" selected="selected"></option>
+						<!-- Category options will be populated from db -->
+					</select>
+
+					<label for="new-account">Account: </label>
+					<select id="new-account" name="new-account">
+						<option value="" selected="selected"></option>
+						<!-- Account options will be populated from db -->
+					</select>
+				</div>
+
+				<!-- Description, amount -->
+				<div>
+					<input type="text" id="new-description" name="new-description" placeholder="Description..." maxlength="200" size="50">
+
+					<label for="new-amount">$</label>
+					<input type="number" id="new-amount" name="new-amount" min="0" step="0.01" value="0">
+				</div>
+			</div>
+		</div>
+		<hr>
+		<hr>
+
+
+<!-- Transaction list section -->
+		<div style="margin: 0.5em">
+			<!-- List control -->
+			<div>
+				<p>Filter transactions:</p>
+				<hr>
+
+				<!-- Filter -->
+				<div>
+					<!-- Date range start -->
+					<div>
+						<label for="filter-start-date">From: </label>
+						<input type="date" id="filter-start-date" name="filter-start-date">
+					</div>
+
+					<!-- Date range end -->
+					<div>
+						<label for="filter-end-date">To: </label>
+						<input type="date" id="filter-end-date" name="filter-end-date">
+					</div>
+
+					<!-- Category -->
+					<div>
+						<label for="filter-category">Category: </label>
+						<select id="filter-category" name="filter-category">
+							<option value="" selected="selected">All</option>
+							<!-- Category options will be populated from db -->
+						</select>
+					</div>
+
+					<!-- Account -->
+					<div>
+						<label for="filter-account">Account: </label>
+						<select id="filter-account" name="filter-account">
+							<option value="" selected="selected">All</option>
+							<!-- Account options will be populated from db -->
+						</select>
+					</div>
+
+					<input type="text" id="filter-description" name="filter-description" placeholder="Description contains..." size="50">
+
+					<!-- Min amount -->
+					<div>
+						<label for="filter-min-amount">Min: $</label>
+						<input type="number" id="filter-min-amount" name="filter-min-amount" min="0" step="0.01" value="0">
+					</div>
+
+					<!-- Max amount -->
+					<div>
+						<label for="filter-max-amount">Max: $</label>
+						<input type="number" id="filter-max-amount" name="filter-max-amount" min="0" step="0.01" value="0">
+					</div>
+				</div>
+				<hr>
+
+				<!-- Sort -->
+				<div>
+					<!-- Sort direction -->
+					<div>
+						<label for="sort-dir">Sort: </label>
+						<select id="sort-dir" name="sort-dir">
+							<option value="asc" selected="selected">Ascending</option>
+							<option value="desc">Descending</option>
+						</select>
+					</div>
+
+					<!-- Sort criteria -->
+					<div>
+						<label for="sort-criteria">Sort by: </label>
+						<select id="sort-criteria" name="sort-criteria">
+							<option value="date" selected="selected">Date</option>
+							<option value="description">Description</option>
+							<option value="category">Category</option>
+							<option value="account">Account</option>
+							<option value="ammount">Amount</option>
+						</select>
+					</div>
+
+					<!-- List limit -->
+					<div>
+						<label for="list-limit">Limit: </label>
+						<select id="list-limit" name="list-limit">
+							<option value="10">10</option>
+							<option value="25">25</option>
+							<option value="50" selected="selected">50</option>
+							<option value="100">100</option>
+							<option value="1000">1000</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<hr>
+
+			<!-- Reset and refresh buttons -->
+			<div>
+				<button type="button" onclick="resetListFilter();">Reset filter</button>
+				<button type="button" onclick="resetListSort();">Reset sort</button>
+				<button type="button" onclick="populateList();">Refresh list</button>
+			</div>
+			<hr>
+
+			<!-- Transaction list -->
+			<div>
+				<table id="transaction-list">
+					<tr>
+						<th>Date</th>
+						<th>Description</th>
+						<th>Category</th>
+						<th>Account</th>
+						<th>Amount</th>
+					</tr>
+					<!-- Rows will be filled in by populateList() -->
+				</table>
+			</div>
+		</div>
+		<hr>
+		<hr>
+	</body>
+</html>
+
+
+<script>
+	// Budget report functions
+	function setBudgetRangeToCurrMonth() {
+	}
+
+
+	function setBudgetRangeToCurrYear() {
+	}
+
+
+	async function populateBudget() {
+	}
+
+
+	// Log transaction functions
+	async function logTransaction() {
+		// Verify values
+		$newTransDate = $("#new-date").val();
+		$newTransDesc = $("#new-description").val();
+		$newTransCat = $("#new-category").val();
+		$newTransAcc = $("#new-account").val();
+		$newTransAmt = Math.round($("#new-amount").val() * 100) / 100;
+		if ($newTransDate == "") {
+			alert("Must enter new transaction date");
+		}
+		else if ($newTransDesc == "") {
+			alert("Must enter new transaction description");
+		}
+		else if ($newTransCat == "") {
+			alert("Must select new transaction category");
+		}
+		else if ($newTransAcc == "") {
+			alert("Must select new transaction account");
+		}
+		else if ($newTransAmt <= 0) {
+			alert("New transaction amount must be positive and have no more than 2 decimal places");
+		}
+		else {
+			await function() {
+				return $.ajax({
+					type: 'POST',
+					url: 'http://localhost:8000/transaction',
+					data: JSON.stringify({date: $newTransDate, desc: $newTransDesc, cat: Number($newTransCat), acc: Number($newTransAcc), amt: $newTransAmt}),
+					success: function(data, status) {
+						alert("Data: " + data + "\nStatus: " + status);
+					},
+					contentType: 'application/json',
+					dataType: 'json'
+				});
+			}();
+		}
+	}
+
+
+	// Transaction list functions
+	function resetListFilter() {
+	}
+
+
+	function resetListSort() {
+	}
+
+
+	async function populateList() {
+		$('#transaction-list tr').remove();
+		await async function() {
+			return $.get('http://localhost:8000/transaction/list', function(result) {
+				for (let transaction of JSON.parse(result)) {
+					console.log(transaction);
+					$('#transaction-list').append(`<tr>
+					<td>${transaction[0].TransactionDate}</td>
+					<td>${transaction[0].Description}</td>
+					<td>${transaction[2].CategoryName}</td>
+					<td>${transaction[4].AccountName}</td>
+					<td>\$${transaction[0].Amount}</td>
+					</tr>`);
+				}
+			}, 'text');
+		}();
+		// TODO
+	}
+
+
+	// Helper functions
+	async function getCategories() {
+		let categories = new Array();
+		await async function() {
+			return $.get('http://localhost:8000/category', function(result) {
+				for (let category of JSON.parse(result)) {
+					categories.push([category.CategoryID, category.CategoryName])
+				}
+			}, 'text');
+		}();
+		return categories;
+	}
+
+
+	async function populateCategoryOptions() {
+		let categories = await getCategories();
+		for (let i = 0; i < categories.length; ++i) {
+			let id = categories[i][0];
+			let name = categories[i][1];
+			// Log transaction
+			$('#new-category').append(`<option value="${id}">${name}</option>`);
+			// Transaction list filter
+			$('#filter-category').append(`<option value="${id}">${name}</option>`);
+		}
+	}
+
+
+	async function getAccounts() {
+		let accs = new Array();
+		await async function() {
+			return $.get('http://localhost:8000/account', function(result) {
+				for (let account of JSON.parse(result)) {
+					accs.push([account.AccountID, account.AccountName]);
+				}
+			}, 'text');
+		}();
+		return accs;
+	}
+
+
+	async function populateAccountOptions() {
+		let accounts = await getAccounts();
+		for (let i = 0; i < accounts.length; ++i) {
+			let id = accounts[i][0];
+			let name = accounts[i][1];
+			// Log transaction
+			$('#new-account').append(`<option value="${id}">${name}</option>`);
+			// Transaction list filter
+			$('#filter-account').append(`<option value="${id}">${name}</option>`);
+		}
+	}
+
+
+	async function loadPage() {
+		populateCategoryOptions();
+		populateAccountOptions();
+		populateList();
+	}
+	$(loadPage);
+</script>
+

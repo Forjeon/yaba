@@ -1,0 +1,249 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.17 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.17">
+  <diagram name="Page-1" id="GCrS7b3TGFkqGuXmk_tY">
+    <mxGraphModel dx="2074" dy="1358" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-2" value="" style="rounded=0;whiteSpace=wrap;html=1;aspect=fixed;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="153" y="760" width="544" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-4" value="" style="rounded=0;whiteSpace=wrap;html=1;aspect=fixed;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="261" width="327.24" height="730" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-5" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="50" width="300" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-16" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="470" width="300" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-17" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="420" width="300" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-20" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="50" width="300" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-11" value="Budget report for &amp;lt;start date dropdown&amp;gt; to &amp;lt;end date dropdown&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="50" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-21" value="&amp;lt;current month btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="70" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-22" value="&amp;lt;current year btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="374.62" y="70" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-23" value="&amp;lt;apply btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="475" y="70" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-24" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="90" width="300" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-25" value="&amp;lt;table of category names, monthly expected (&#39;+&#39;) / budget (&#39;-&#39;), current value (&#39;+&#39; income, &#39;-&#39; expense)&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="90" width="300" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-26" value="&amp;lt;credit account 1&amp;gt;: &amp;lt;balance for period&amp;gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&amp;lt;credit account 2&amp;gt;: &amp;lt;balance for period&amp;gt;&lt;/div&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;...&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="340" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-27" value="Period Profit: &amp;lt;period profit&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="390" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=10;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-29" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="70" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-29" value="default to current month on page load" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=19;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="710" y="10" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=10;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-31" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="660" y="250" />
+              <mxPoint x="660" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-31" value="date dropdown has &quot;today&quot; option (default on page load)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="710" y="200" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-32" value="amount value must be greater than 0 (default 0.00)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="710" y="530" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-33" value="&amp;lt;log new transaction btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="420" width="60" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-35" value="Category: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="405" y="420" width="85" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-37" value="$&amp;lt;amount&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="500" y="440" width="75" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-39" value="&amp;lt;description entry&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="335" y="440" width="165" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-40" value="display all dates in &#39;Mon. d, YYYY&#39; format" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=19;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="73" y="20" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=10;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-46" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="660" y="360" />
+              <mxPoint x="660" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-46" value="cat and acc dropdowns must have entry (default empty)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="710" y="310" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=10;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-32" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="440" as="targetPoint" />
+            <mxPoint x="720" y="430" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="660" y="580" />
+              <mxPoint x="660" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-52" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="470" width="300" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-53" value="Date: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="335" y="420" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-54" value="Account: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="490" y="420" width="85" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=10;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-55" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="660" y="470" />
+              <mxPoint x="660" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-55" value="desc can&#39;t be empty (default empty; &quot;description...&quot; hint)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="710" y="420" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-58" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="500" y="470" width="75" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-57" value="Sort &amp;lt;dir dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="500" y="470" width="75" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-59" value="&amp;lt;criteria dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="500" y="490" width="75" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-60" value="Limit: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="500" y="510" width="75" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-85" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-61" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-61" value="sort criteria list: date, desc, cat, acc, amount" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="30" y="500" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-62" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="520" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="180" y="660" />
+              <mxPoint x="180" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-62" value="sort limit list: 10, 25, 50, 100, 1000" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="30" y="610" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-64" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="470" width="225" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-65" value="Filter transactions:" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="470" width="90" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-66" value="From: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="365" y="470" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-67" value="To: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="435" y="470" width="65" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-69" value="&amp;lt;desc contains entry&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="510" width="105" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-70" value="$&amp;lt;min&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="380" y="510" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-71" value="$&amp;lt;max&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="440" y="510" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-72" value="Category in: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="490" width="115" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-73" value="Account in: &amp;lt;dpdn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="390" y="490" width="110" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-74" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="274.62" y="530" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-76" value="&amp;lt;apply btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="475" y="530" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-77" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="550" width="300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-78" value="Showing &amp;lt;#&amp;gt; of &amp;lt;#&amp;gt; results" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="274.62" y="550" width="150" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-80" value="&amp;lt;page dropdown&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="425" y="550" width="150" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-81" value="&amp;lt;reset sort btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="374.62" y="530" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-82" value="&amp;lt;reset filter btn&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="530" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-83" value="&amp;lt;scrollable table of transaction dates, description, categories, accounts, amounts (&#39;+&#39; income, &#39;-&#39; expense)&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="275" y="570" width="300" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-84" value="Yaba ver&amp;lt;version string&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;align=left;" parent="1" vertex="1">
+          <mxGeometry x="275" y="10" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="tgXVX6n1NBCH5rMzHP8B-91" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="520" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="180" y="420" />
+              <mxPoint x="180" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-91" value="default to filter on current month sort by dates asc limit 100" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=19;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="30" y="370" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-93" value="transaction table list occupy remainder of page, min size for 10 rows (all else fixed size)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=13;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="73" y="130" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-94" value="all sizes based on font size 12pt real size" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=13;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="73" y="240" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-95" value="Yaba ver&amp;lt;version string&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+          <mxGeometry x="160" y="770" width="530" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-96" value="transaction list section" style="rounded=0;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="430" y="800" width="260" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-98" value="log new transaction section" style="rounded=0;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="160" y="800" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tgXVX6n1NBCH5rMzHP8B-99" value="budget section" style="rounded=0;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="160" y="840" width="260" height="250" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

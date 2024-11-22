@@ -125,6 +125,10 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 // TODO: UI design + programming, future milestone
 
 
+// TODO: security remidiation: user authentication and RBAC, SSLA TLS certificates, HTTPS, encrypt communications, extract as much frontend interface code to the backend as possible, revamp REST APIs for cleaner and more controlled access, obfuscate client JS
+// TODO: webapp features: CSS, budget reporting, transaction list filtering and sorting, multi-browser available (Google Chrome, Vivaldi, and qutebrowser minimum), transaction deletion
+
+
 // Backend setup functions
 async fn fetch_db(rocket: Rocket<Build>) -> fairing::Result {
 	if let Some(_) = Db::fetch(&rocket) { Ok(rocket) } else { Err(rocket) }

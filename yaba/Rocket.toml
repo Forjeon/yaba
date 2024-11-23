@@ -1,3 +1,3 @@
 [default.databases.yaba]
-url = "mysql://root:Akclycnnons@localhost/yaba?socket=%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock"
+url = "mysql://yaba:2217@localhost/yaba?socket=%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock"
 

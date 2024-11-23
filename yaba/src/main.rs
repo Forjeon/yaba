@@ -3,7 +3,7 @@
 
 use std::str::FromStr;
 
-use rocket::{ Rocket, Build, fs::NamedFile, response::Redirect };
+use rocket::{ Rocket, Build, fs::{ FileServer, NamedFile, relative}, response::Redirect };
 use rocket::fairing::{ self, AdHoc };
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
@@ -79,16 +79,19 @@ async fn get_trans_list(mut db:Connection<Db>) -> String {
 //	Transaction logging
 #[post("/", format = "json", data = "<data>")]
 async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> {
+	println!("DEBUG 0");//FIXME:DEL
 	let new_trans_data: Trans_NewData = serde_json::from_str(&data).expect("Error deserializing new transaction data");
+	println!("DEBUG 1");//FIXME:DEL
 
 	diesel::insert_into(Transaction::table)
 		.values(Trans_Insert {
-			TransactionDate: new_trans_data.date,
+			TransactionDate: new_trans_data.date.clone(),
 			Description: new_trans_data.desc.clone(),
 			Amount: new_trans_data.amt.clone(),
 		})
 		.execute(&mut db)
 		.await?;
+	println!("DEBUG 2");//FIXME:DEL
 
 	let new_trans = Transaction::table
 		.filter(Transaction::TransactionDate.eq(new_trans_data.date))
@@ -98,6 +101,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 		.first(&mut db)
 		.await?;
 	println!("DEBUG: {:?}", new_trans);
+	println!("DEBUG 3");//FIXME:DEL
 
 	diesel::insert_into(TransactionInstanceCategory::table)
 		.values(TransInstCat {
@@ -106,6 +110,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 		})
 		.execute(&mut db)
 		.await?;
+	println!("DEBUG 4");//FIXME:DEL
 
 	diesel::insert_into(TransactionAccount::table)
 		.values(TransAcc {
@@ -114,6 +119,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 		})
 		.execute(&mut db)
 		.await?;
+	println!("DEBUG 5");//FIXME:DEL
 
 	Ok("WORKING".into())
 }
@@ -126,7 +132,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 
 
 // TODO: security remidiation: user authentication and RBAC, SSLA TLS certificates, HTTPS, encrypt communications, extract as much frontend interface code to the backend as possible, revamp REST APIs for cleaner and more controlled access, obfuscate client JS
-// TODO: webapp features: CSS, budget reporting, transaction list filtering and sorting, multi-browser available (Google Chrome, Vivaldi, and qutebrowser minimum), transaction deletion
+// TODO: webapp features: budget reporting, transaction list filtering and sorting, multi-browser available (Google Chrome, Vivaldi, and qutebrowser minimum), transaction deletion, CSS, favicon.ico, lightmode/darkmode button
 
 
 // Backend setup functions
@@ -140,6 +146,8 @@ fn rocket() -> _ {
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
+		//.mount("/webpages", routes![home])
+		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/category", routes![get_cats])
 		.mount("/account", routes![get_accs])
 		.mount("/transaction", routes![get_trans_list, log_trans])

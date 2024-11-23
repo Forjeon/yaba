@@ -3,6 +3,7 @@
 	<head>
 		<title>Yaba ver0.1.0</title>
 		<!-- CSS in future version (figure out Rocket routing for CSS?) <link href="index.css" rel="stylesheet"> -->
+		<link href="index.css" rel="stylesheet">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 		<!-- jQuery script loader? -->
 	</head>
@@ -240,6 +241,9 @@
 
 
 <script>
+	const BACKEND_ADDR = 'http://10.0.0.211:80';
+
+
 	// Budget report functions
 	function setBudgetRangeToCurrMonth() {
 	}
@@ -280,7 +284,7 @@
 			await function() {
 				return $.ajax({
 					type: 'POST',
-					url: 'http://localhost:8000/transaction',
+					url: BACKEND_ADDR + '/transaction',
 					data: JSON.stringify({date: $newTransDate, desc: $newTransDesc, cat: Number($newTransCat), acc: Number($newTransAcc), amt: $newTransAmt}),
 					success: function(data, status) {
 						alert("Data: " + data + "\nStatus: " + status);
@@ -305,7 +309,7 @@
 	async function populateList() {
 		$('#transaction-list tr').remove();
 		await async function() {
-			return $.get('http://localhost:8000/transaction/list', function(result) {
+			return $.get(BACKEND_ADDR + '/transaction/list', function(result) {
 				for (let transaction of JSON.parse(result)) {
 					console.log(transaction);
 					$('#transaction-list').append(`<tr>
@@ -326,7 +330,7 @@
 	async function getCategories() {
 		let categories = new Array();
 		await async function() {
-			return $.get('http://localhost:8000/category', function(result) {
+			return $.get(BACKEND_ADDR + '/category', function(result) {
 				for (let category of JSON.parse(result)) {
 					categories.push([category.CategoryID, category.CategoryName])
 				}
@@ -352,7 +356,7 @@
 	async function getAccounts() {
 		let accs = new Array();
 		await async function() {
-			return $.get('http://localhost:8000/account', function(result) {
+			return $.get(BACKEND_ADDR + '/account', function(result) {
 				for (let account of JSON.parse(result)) {
 					accs.push([account.AccountID, account.AccountName]);
 				}

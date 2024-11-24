@@ -79,9 +79,7 @@ async fn get_trans_list(mut db:Connection<Db>) -> String {
 //	Transaction logging
 #[post("/", format = "json", data = "<data>")]
 async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> {
-	println!("DEBUG 0");//FIXME:DEL
 	let new_trans_data: Trans_NewData = serde_json::from_str(&data).expect("Error deserializing new transaction data");
-	println!("DEBUG 1");//FIXME:DEL
 
 	diesel::insert_into(Transaction::table)
 		.values(Trans_Insert {
@@ -91,35 +89,29 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 		})
 		.execute(&mut db)
 		.await?;
-	println!("DEBUG 2");//FIXME:DEL
 
-	let new_trans = Transaction::table
-		.filter(Transaction::TransactionDate.eq(new_trans_data.date))
-		.filter(Transaction::Description.eq(new_trans_data.desc))
-		.filter(Transaction::Amount.eq(new_trans_data.amt))
-		.select(Trans::as_select())
+	let new_trans_id_nullable: Option<u32> = Transaction::table
+		.select(diesel::dsl::max(Transaction::TransactionID))
 		.first(&mut db)
 		.await?;
-	println!("DEBUG: {:?}", new_trans);
-	println!("DEBUG 3");//FIXME:DEL
+
+	let new_trans_id = new_trans_id_nullable.unwrap();
 
 	diesel::insert_into(TransactionInstanceCategory::table)
 		.values(TransInstCat {
-			TransactionID: new_trans.TransactionID,
+			TransactionID: new_trans_id,
 			CategoryID: new_trans_data.cat,
 		})
 		.execute(&mut db)
 		.await?;
-	println!("DEBUG 4");//FIXME:DEL
 
 	diesel::insert_into(TransactionAccount::table)
 		.values(TransAcc {
-			TransactionID: new_trans.TransactionID,
+			TransactionID: new_trans_id,
 			AccountID: new_trans_data.acc,
 		})
 		.execute(&mut db)
 		.await?;
-	println!("DEBUG 5");//FIXME:DEL
 
 	Ok("WORKING".into())
 }
@@ -132,7 +124,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 
 
 // TODO: security remidiation: user authentication and RBAC, SSLA TLS certificates, HTTPS, encrypt communications, extract as much frontend interface code to the backend as possible, revamp REST APIs for cleaner and more controlled access, obfuscate client JS
-// TODO: webapp features: budget reporting, transaction list filtering and sorting, multi-browser available (Google Chrome, Vivaldi, and qutebrowser minimum), transaction deletion, CSS, favicon.ico, lightmode/darkmode button
+// TODO: webapp features: error on bad transaction (rollback and client warning), budget reporting, transaction list filtering and sorting, multi-browser available (Google Chrome, Vivaldi, and qutebrowser minimum), transaction deletion, CSS, favicon.ico, lightmode/darkmode button
 
 
 // Backend setup functions

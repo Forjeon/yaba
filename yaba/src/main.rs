@@ -119,9 +119,8 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 
 // Security remidiation TODO:
 // TODO: user authentication
-// TODO: TLS certificates  
-// TODO: HTTPS  
-// TODO: encrypt communications
+// TODO: set up E & J clients to trust yaba TLS snakeoil
+// TODO: encrypt communications (necessary in addition to HTTPS?)
 // TODO: extract interface code to backend
 // TODO: revamp REST APIs for cleaner and more controlled access
 // TODO: obfuscate client JS

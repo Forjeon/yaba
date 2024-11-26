@@ -117,14 +117,24 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 }
 
 
-// DELETE requests
+// Security remidiation TODO:
+// TODO: user authentication
+// TODO: TLS certificates  
+// TODO: HTTPS  
+// TODO: encrypt communications
+// TODO: extract interface code to backend
+// TODO: revamp REST APIs for cleaner and more controlled access
+// TODO: obfuscate client JS
 
-//	Transaction deletion
-// TODO: UI design + programming, future milestone
 
-
-// TODO: security remidiation: user authentication and RBAC, SSLA TLS certificates, HTTPS, encrypt communications, extract as much frontend interface code to the backend as possible, revamp REST APIs for cleaner and more controlled access, obfuscate client JS
-// TODO: webapp features: error on bad transaction (rollback and client warning), budget reporting, transaction list filtering and sorting, multi-browser available (Google Chrome, Vivaldi, and qutebrowser minimum), transaction deletion, CSS, favicon.ico, lightmode/darkmode button
+// yaba features TODO:
+// TODO: error on bad transaction (rollback on backend, warn on client)
+// TODO: budget reporting
+// TODO: transaction list filtering and sorting
+// TODO: multi-browser functionality (minimum of Chrome, Vivaldi, and qutebrowser)
+// TODO: CSS
+// TODO: favicon.ico
+// TODO: (maybe) lightmode/darkmode button or browser-based
 
 
 // Backend setup functions

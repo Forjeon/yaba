@@ -117,10 +117,21 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 }
 
 
+// Security attacks to defend against TODO:
+// TODO: MITM
+// TODO: Masquerade
+// TODO: Host attacks (plaintext theft, dictionary search)
+// TODO: Replay
+	// Solve with: login nonce is time-based (10s max?)
+// TODO: specific account attack
+	// Solve with: permanent lockout after 3 attempts (can be undone from within server, maybe as a bool in user db?)
+
+
 // Security remidiation TODO:
 // TODO: user authentication
+	// login page will accept username and password simultaneously without any intermediate communication with backend before challenge response; embed challenge in login page somehow?
+	// Use: salt (determined how? avoid transmitting or obsious clientside algorithm?), Bcrypt for password hash, public-key encryption on top of password hash before sending, challenge-response protocol on top of encrypted password hash (timeout of nonse after short time)
 // TODO: set up E & J clients to trust yaba TLS snakeoil
-// TODO: encrypt communications (necessary in addition to HTTPS?)
 // TODO: extract interface code to backend
 // TODO: revamp REST APIs for cleaner and more controlled access
 // TODO: obfuscate client JS

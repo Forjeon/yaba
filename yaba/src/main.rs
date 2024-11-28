@@ -1,15 +1,14 @@
 #[macro_use] extern crate rocket;
 
 
-use std::str::FromStr;
-
-use rocket::{ Rocket, Build, fs::{ FileServer, NamedFile, relative}, response::Redirect };
+use rocket::{ Rocket, Build };
+use rocket::http::{ Cookie, CookieJar };
+use rocket::fs::{ FileServer, NamedFile, relative };
 use rocket::fairing::{ self, AdHoc };
+use rocket::response::Redirect;
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
-use bigdecimal::BigDecimal;
-use chrono::NaiveDate;
 use sha256;
 
 use yaba::schema::*;
@@ -22,19 +21,46 @@ struct Db(MysqlPool);
 
 
 // Login routes
-fn test(msg: String) -> String {
-	let digest = sha256::digest(msg);
-	println!("DIGEST: |{digest}|");
-	digest
-}
-
 #[get("/")]
 async fn login() -> Option<NamedFile> {
 	NamedFile::open("webpages/login.html").await.ok()
 }
 
 
-// Yaba pages
+// User authentication functions
+//	Challenge-response protocol
+fn compare_response(challenge: &str, username: &str, response: &str) -> bool {
+	todo!();	// TODO: first call validateUser(username), then use that result to get the user passkey and generate the appropriate response to compare against (decrypt response before comparison)
+}
+
+fn generate_challenge() -> String {
+	todo!();	// TODO: time-based (~10s? how to generate?) also send strings of different lengths and contents to reduce predictability
+}
+
+//	User validation
+fn increment_bad_attempts(username: &str) {
+	todo!();
+}
+
+fn reset_bad_attempts(username: &str) {
+	todo!();
+}
+
+fn validate_user(username: &str) -> Option<String> {
+	todo!();	// TODO: first try to get username from db with `SELECT Name FROM Users WHERE Name = <username> LIMIT 1;` and then validate that the BadAttempts for that user are less than 3 and return Some(username) (or None if any of those steps failed)
+}
+
+//	User session
+fn create_user_session(cookie_jar: &CookieJar<'_>) {
+	todo!();	// TODO: id is "session", value is username; max age is 10 minutes, expires is Session
+}
+
+fn validate_user_session(cookie_jar: &CookieJar<'_>) -> bool {
+	todo!();	// TODO: get the user session private cookie (return false if no such cookie) and validate it (return false if invalid)
+}
+
+
+// Yaba routes and functions
 #[get("/")]
 fn index() -> Redirect {
 	Redirect::to(uri!("/home"))
@@ -142,14 +168,15 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 	// valid user session private cookie must exist to access any endpoint other than login.html and login.css
 	// valid user session private cookie is created upon successful login and is requested by server to be destroyed after session expires
 
+
 // NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
 
 
 // Security attacks to defend against TODO:
 // TODO: MITM and eavesdrop
-	// Solve with: Bcrypt hash passwords for transmitting and storing in user db, message digest (figure this out!)
+	// Solve with: hash passwords for transmitting and storing in user db
 // TODO: Masquerade
-	// Solve with: only give out server public key directly from server (not through API, must have direct local access to server), then use public-key encryption for challenge-response login; also have second challenge-response thereafter in which the server (having the user public key received locally as above) public-key encrypts the challenge and again expects a public-key encrypted response
+	// Solve with: only give out server public key directly from server (not through API, must have direct local access to server), then use public-key encryption for challenge-response login
 // TODO: Host attacks (plaintext theft, dictionary search)
 	// Solve with: transmit and store only password hashes; use good password practices
 // TODO: Replay
@@ -162,7 +189,6 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 // TODO: user authentication
 	// login page will accept username and password simultaneously without any intermediate communication with backend before challenge response; embed challenge in login page somehow?
 	// User session will only last ten minutes, after which the page is reloaded and should redirect to login page
-	// Use: salt (determined how? avoid transmitting or obsious clientside algorithm?), Bcrypt for password hash, public-key encryption on top of password hash before sending, challenge-response protocol on top of encrypted password hash (timeout of nonse after short time)
 // TODO: set up E & J clients to trust yaba TLS snakeoil
 // TODO: extract interface code to backend
 // TODO: revamp REST APIs for cleaner and more controlled access
@@ -190,8 +216,8 @@ fn rocket() -> _ {
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
-		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/login", routes![login])
+		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/category", routes![get_cats])
 		.mount("/account", routes![get_accs])
 		.mount("/transaction", routes![get_trans_list, log_trans])

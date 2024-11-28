@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rocket = "0.5.1"
+rocket = { version = "0.5.1", features = ["secrets"] }
 diesel = { version = "2", features = ["numeric", "chrono"] }
 diesel-derive-enum = { version = "2.1.0", features = ["mysql"] }
 bigdecimal = { version = "0.4.5", features = ["serde"] }

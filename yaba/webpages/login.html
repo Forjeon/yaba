@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Yaba Login</title>
+		<link href="login.css" rel="stylesheet">
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<h2>Yaba Login</h2>
+
+		<div>
+			<label for="login-name">Username</label>
+			<input type="text" id="login-name">
+
+			<label for="login-pwd">Password</label>
+			<input type="password" id="login-pwd">
+
+			<button type="button" onclick="testLogin();">Log in</button>
+		</div>
+	</body>
+</html>
+
+<script>
+	async function testLogin() {
+		alert("name: |" + $("#login-name").val() + "|\npwd: |" + $("#login-pwd").val() + "|\nkey: |" + await digestPassword($("#login-pwd").val()) + "|");
+	}
+
+	async function digestPassword(pwd) {
+		const hash = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(pwd));
+		return Array.from(new Uint8Array(hash)).map((x) => x.toString(16).padStart(2, "0")).join("");
+	}
+</script>
+

@@ -90,6 +90,14 @@ CREATE TABLE IF NOT EXISTS JobIncome (
 	FOREIGN KEY (JobID) REFERENCES Job(JobID)
 );
 
+	-- Users table
+
+-- CREATE TABLE IF NOT EXISTS Users (
+	-- Name VARCHAR(20) NOT NULL PRIMARY KEY,
+	-- Key CHAR(64) NOT NULL,
+	-- FailedAttempts TINYINT UNSIGNED NOT NULL
+-- );
+
 
 -- Populate categories
 

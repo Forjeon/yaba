@@ -117,10 +117,25 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 }
 
 
+// Security Plan TODO:
+// TODO: user authentication:
+	// login page is sent with embedded nonce
+	// challenge response is pwd SHA256 digest concatenated with challenge and encrypted with yaba server public key
+	// nonce is time-based (derive from nondecreasing datum?) and expires after some short time (e.g. 10s?)
+	// submitted user (identified by username) is locked out permanently (must be reset on server by manually unlocking in user db) after three failed login attempts (failed attempts are reset after successful login)
+	// user session is tracked using Rust Rocket private cookies
+	// user session lasts for short period (e.g., 10min?) before API calls are ignored (and logged) and a redirect to the login page is requested
+	// valid user session private cookie must exist to access any endpoint other than login.html and login.css
+	// valid user session private cookie is created upon successful login and is requested by server to be destroyed after session expires
+
+
 // Security attacks to defend against TODO:
-// TODO: MITM
+// TODO: MITM and eavesdrop
+	// Solve with: Bcrypt hash passwords for transmitting and storing in user db, message digest (figure this out!)
 // TODO: Masquerade
+	// Solve with: only give out server public key directly from server (not through API, must have direct local access to server), then use public-key encryption for challenge-response login; also have second challenge-response thereafter in which the server (having the user public key received locally as above) public-key encrypts the challenge and again expects a public-key encrypted response
 // TODO: Host attacks (plaintext theft, dictionary search)
+	// Solve with: transmit and store only password hashes; use good password practices
 // TODO: Replay
 	// Solve with: login nonce is time-based (10s max?)
 // TODO: specific account attack
@@ -130,6 +145,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 // Security remidiation TODO:
 // TODO: user authentication
 	// login page will accept username and password simultaneously without any intermediate communication with backend before challenge response; embed challenge in login page somehow?
+	// User session will only last ten minutes, after which the page is reloaded and should redirect to login page
 	// Use: salt (determined how? avoid transmitting or obsious clientside algorithm?), Bcrypt for password hash, public-key encryption on top of password hash before sending, challenge-response protocol on top of encrypted password hash (timeout of nonse after short time)
 // TODO: set up E & J clients to trust yaba TLS snakeoil
 // TODO: extract interface code to backend

@@ -17,13 +17,35 @@
 			<input type="password" id="login-pwd">
 
 			<button type="button" onclick="testLogin();">Log in</button>
+			<button type="button" onclick="testRemoteDigest();">TESTING</button>
 		</div>
 	</body>
 </html>
 
 <script>
+	const BACKEND_ADDR = "https://10.0.0.211";
+
+
+	async function testRemoteDigest() {
+		const password = $("#login-pwd").val();
+		await async function() {
+			return $.get(BACKEND_ADDR + "/test/" + password);
+		}();
+	}
+
+
 	async function testLogin() {
+		const username = $("#login-name").val();
+		const password = $("#login-pwd").val();
+		const localDigest = await digestPassword(password);
+
 		alert("name: |" + $("#login-name").val() + "|\npwd: |" + $("#login-pwd").val() + "|\nkey: |" + await digestPassword($("#login-pwd").val()) + "|");
+
+		await async function() {
+			return $.get(BACKEND_ADDR + '/test/' + password, function(result) {
+				alert("TEST: |" + result + "|");
+			}, 'text');
+		}();
 	}
 
 	async function digestPassword(pwd) {

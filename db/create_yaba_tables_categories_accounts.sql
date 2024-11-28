@@ -92,11 +92,11 @@ CREATE TABLE IF NOT EXISTS JobIncome (
 
 	-- Users table
 
--- CREATE TABLE IF NOT EXISTS Users (
-	-- Name VARCHAR(20) NOT NULL PRIMARY KEY,
-	-- Key CHAR(64) NOT NULL,
-	-- FailedAttempts TINYINT UNSIGNED NOT NULL
--- );
+CREATE TABLE IF NOT EXISTS Users (
+	Name VARCHAR(20) NOT NULL PRIMARY KEY,
+	Passkey CHAR(64) NOT NULL,
+	BadAttempts TINYINT UNSIGNED NOT NULL
+);
 
 
 -- Populate categories

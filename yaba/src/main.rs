@@ -10,6 +10,7 @@ use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
 use bigdecimal::BigDecimal;
 use chrono::NaiveDate;
+use sha256;
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -18,6 +19,19 @@ use yaba::models::*;
 #[derive(Database)]
 #[database("yaba")]
 struct Db(MysqlPool);
+
+
+// Login routes
+fn test(msg: String) -> String {
+	let digest = sha256::digest(msg);
+	println!("DIGEST: |{digest}|");
+	digest
+}
+
+#[get("/")]
+async fn login() -> Option<NamedFile> {
+	NamedFile::open("webpages/login.html").await.ok()
+}
 
 
 // Yaba pages
@@ -128,6 +142,8 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 	// valid user session private cookie must exist to access any endpoint other than login.html and login.css
 	// valid user session private cookie is created upon successful login and is requested by server to be destroyed after session expires
 
+// NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
+
 
 // Security attacks to defend against TODO:
 // TODO: MITM and eavesdrop
@@ -174,8 +190,8 @@ fn rocket() -> _ {
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
-		//.mount("/webpages", routes![home])
 		.mount("/", FileServer::from(relative!("webpages")))
+		.mount("/login", routes![login])
 		.mount("/category", routes![get_cats])
 		.mount("/account", routes![get_accs])
 		.mount("/transaction", routes![get_trans_list, log_trans])

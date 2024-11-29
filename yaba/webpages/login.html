@@ -17,35 +17,40 @@
 			<input type="password" id="login-pwd">
 
 			<button type="button" onclick="testLogin();">Log in</button>
-			<button type="button" onclick="testRemoteDigest();">TESTING</button>
+
+			<input type="file" onchange="readFile(event)">
 		</div>
 	</body>
 </html>
 
 <script>
 	const BACKEND_ADDR = "https://10.0.0.211";
+	var pubkeyFile = "NONE";
 
 
-	async function testRemoteDigest() {
-		const password = $("#login-pwd").val();
-		await async function() {
-			return $.get(BACKEND_ADDR + "/test/" + password);
-		}();
+	function readFile(e) {
+		pubkeyFile = e.target.files[0];
+		/*
+		var file = e.target.files[0];
+		if (!file) return;
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			pubkey = e.target.result;
+		};
+		reader.readAsText(file);
+   		*/
 	}
-
-
 	async function testLogin() {
 		const username = $("#login-name").val();
 		const password = $("#login-pwd").val();
 		const localDigest = await digestPassword(password);
 
-		alert("name: |" + $("#login-name").val() + "|\npwd: |" + $("#login-pwd").val() + "|\nkey: |" + await digestPassword($("#login-pwd").val()) + "|");
-
-		await async function() {
-			return $.get(BACKEND_ADDR + '/test/' + password, function(result) {
-				alert("TEST: |" + result + "|");
-			}, 'text');
-		}();
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			alert("CONTENTS:\n" + e.target.result);
+			alert("name: |" + $("#login-name").val() + "|\npwd: |" + $("#login-pwd").val() + "|\nkey: |" + localDigest + "|");
+		};
+		reader.readAsText(pubkeyFile);
 	}
 
 	async function digestPassword(pwd) {

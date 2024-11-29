@@ -1,6 +1,5 @@
 #[macro_use] extern crate rocket;
 
-
 use rocket::{ Rocket, Build };
 use rocket::http::{ Cookie, CookieJar };
 use rocket::fs::{ FileServer, NamedFile, relative };
@@ -9,7 +8,8 @@ use rocket::response::Redirect;
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
-use sha256;
+//use sha256;
+use openssl::{ base64, rsa, sha };
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -170,6 +170,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 
 
 // NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
+// NOTE: RustCrypto RSA (rsa crate) was found to be vulnerable to the Marvin Attack by a third party; the crate is actively being remidiated to address this
 
 
 // Security attacks to defend against TODO:

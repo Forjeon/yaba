@@ -4,7 +4,7 @@ use rocket::{ Rocket, Build };
 use rocket::http::{ Cookie, CookieJar };
 use rocket::fs::{ FileServer, NamedFile, relative };
 use rocket::fairing::{ self, AdHoc };
-use rocket::response::Redirect;
+use rocket::response::{ Redirect, content };
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
@@ -21,6 +21,20 @@ struct Db(MysqlPool);
 
 
 // Login routes
+#[get("/test")]
+fn test() -> content::RawHtml<String> {
+	content::RawHtml(r#"<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Yaba Login</title>
+	</head>
+	<body>
+		<h2>TEST</h2>
+	</body>
+</html>"#.into())
+}
+
+
 #[get("/")]
 async fn login() -> Option<NamedFile> {
 	NamedFile::open("webpages/login.html").await.ok()
@@ -217,6 +231,7 @@ fn rocket() -> _ {
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
+		.mount("/", routes![test])
 		.mount("/login", routes![login])
 		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/category", routes![get_cats])

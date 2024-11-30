@@ -1,5 +1,9 @@
 #[macro_use] extern crate rocket;
 
+use std::fs::File;
+use std::io::{ BufReader, Read };
+use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
+
 use rocket::{ Rocket, Build };
 use rocket::http::{ Cookie, CookieJar };
 use rocket::fs::{ FileServer, NamedFile, relative };
@@ -20,24 +24,27 @@ use yaba::models::*;
 struct Db(MysqlPool);
 
 
-// Login routes
-#[get("/test")]
-fn test() -> content::RawHtml<String> {
-	content::RawHtml(r#"<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Yaba Login</title>
-	</head>
-	<body>
-		<h2>TEST</h2>
-	</body>
-</html>"#.into())
+// Helpers
+fn embed_page_backend_addr(client_ip: IpAddr, page_content: &str) -> String {
+	let is_lan_client = match client_ip {
+		IpAddr::V4(addr) => addr.is_private(),
+		_ => false,
+	};
+	let backend_addr = if is_lan_client { "10.0.0.211" } else { "98.202.86.115" };
+	page_content.replace("%|%|BACKEND_ADDR|%|%", backend_addr)
+}
+
+fn read_page_file(filepath: &str) -> String {
+	let mut page_content = String::new();
+	let _ = BufReader::new(File::open(filepath).unwrap()).read_to_string(&mut page_content);
+	page_content
 }
 
 
+// Login routes
 #[get("/")]
-async fn login() -> Option<NamedFile> {
-	NamedFile::open("webpages/login.html").await.ok()
+async fn login(client_ip: IpAddr) -> content::RawHtml<String> {
+	content::RawHtml(embed_page_backend_addr(client_ip, &read_page_file("webpages/templates/login.html")))
 }
 
 
@@ -81,8 +88,8 @@ fn index() -> Redirect {
 }
 
 #[get("/home")]
-async fn home() -> Option<NamedFile> {
-	NamedFile::open("webpages/index.html").await.ok()
+async fn home(client_ip: IpAddr) -> content::RawHtml<String> {
+	content::RawHtml(embed_page_backend_addr(client_ip, &read_page_file("webpages/templates/index.html")))
 }
 
 
@@ -231,7 +238,6 @@ fn rocket() -> _ {
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
-		.mount("/", routes![test])
 		.mount("/login", routes![login])
 		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/category", routes![get_cats])

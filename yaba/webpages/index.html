@@ -240,9 +240,6 @@
 
 
 <script>
-	const BACKEND_ADDR = "https://%|%|BACKEND_ADDR|%|%";
-
-
 	// Budget report functions
 	function setBudgetRangeToCurrMonth() {
 	}
@@ -259,34 +256,36 @@
 	// Log transaction functions
 	async function logTransaction() {
 		// Verify values
-		$newTransDate = $("#new-date").val();
-		$newTransDesc = $("#new-description").val();
-		$newTransCat = $("#new-category").val();
-		$newTransAcc = $("#new-account").val();
-		$newTransAmt = Math.round($("#new-amount").val() * 100) / 100;
-		if ($newTransDate == "") {
-			alert("Must enter new transaction date");
+		$newTransDate = $('#new-date').val();
+		$newTransDesc = $('#new-description').val();
+		$newTransCat = $('#new-category').val();
+		$newTransAcc = $('#new-account').val();
+		$newTransAmt = Math.round($('#new-amount').val() * 100) / 100;
+		if ($newTransDate == '') {
+			alert('Must enter new transaction date');
 		}
-		else if ($newTransDesc == "") {
-			alert("Must enter new transaction description");
+		else if ($newTransDesc == '') {
+			alert('Must enter new transaction description');
 		}
-		else if ($newTransCat == "") {
-			alert("Must select new transaction category");
+		else if ($newTransCat == '') {
+			alert('Must select new transaction category');
 		}
-		else if ($newTransAcc == "") {
-			alert("Must select new transaction account");
+		else if ($newTransAcc == '') {
+			alert('Must select new transaction account');
 		}
 		else if ($newTransAmt <= 0) {
-			alert("New transaction amount must be positive and have no more than 2 decimal places");
+			alert('New transaction amount must be positive and have no more than 2 decimal places');
 		}
 		else {
 			await function() {
 				return $.ajax({
 					type: 'POST',
-					url: BACKEND_ADDR + '/transaction',
+					//url: BACKEND_ADDR + '/transaction',
+					url: '/transaction',
+					url: '/transaction',
 					data: JSON.stringify({date: $newTransDate, desc: $newTransDesc, cat: Number($newTransCat), acc: Number($newTransAcc), amt: $newTransAmt}),
 					success: function(data, status) {
-						alert("Data: " + data + "\nStatus: " + status);
+						alert('Data: ' + data + '\nStatus: ' + status);
 					},
 					contentType: 'application/json',
 					dataType: 'json'
@@ -308,7 +307,8 @@
 	async function populateList() {
 		$('#transaction-list tr').remove();
 		await async function() {
-			return $.get(BACKEND_ADDR + '/transaction/list', function(result) {
+			//return $.get(BACKEND_ADDR + '/transaction/list', function(result) {
+			return $.get('/transaction/list', function(result) {
 				for (let transaction of JSON.parse(result)) {
 					console.log(transaction);
 					$('#transaction-list').append(`<tr>
@@ -329,7 +329,8 @@
 	async function getCategories() {
 		let categories = new Array();
 		await async function() {
-			return $.get(BACKEND_ADDR + '/category', function(result) {
+			//return $.get(BACKEND_ADDR + '/category', function(result) {
+			return $.get('/category', function(result) {
 				for (let category of JSON.parse(result)) {
 					categories.push([category.CategoryID, category.CategoryName])
 				}
@@ -355,7 +356,8 @@
 	async function getAccounts() {
 		let accs = new Array();
 		await async function() {
-			return $.get(BACKEND_ADDR + '/account', function(result) {
+			//return $.get(BACKEND_ADDR + '/account', function(result) {
+			return $.get('/account', function(result) {
 				for (let account of JSON.parse(result)) {
 					accs.push([account.AccountID, account.AccountName]);
 				}

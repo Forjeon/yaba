@@ -25,15 +25,6 @@ struct Db(MysqlPool);
 
 
 // Helpers
-fn embed_page_backend_addr(client_ip: IpAddr, page_content: &str) -> String {
-	let is_lan_client = match client_ip {
-		IpAddr::V4(addr) => addr.is_private(),
-		_ => false,
-	};
-	let backend_addr = if is_lan_client { "10.0.0.211" } else { "98.202.86.115" };
-	page_content.replace("%|%|BACKEND_ADDR|%|%", backend_addr)
-}
-
 fn read_page_file(filepath: &str) -> String {
 	let mut page_content = String::new();
 	let _ = BufReader::new(File::open(filepath).unwrap()).read_to_string(&mut page_content);
@@ -43,8 +34,8 @@ fn read_page_file(filepath: &str) -> String {
 
 // Login routes
 #[get("/")]
-async fn login(client_ip: IpAddr) -> content::RawHtml<String> {
-	content::RawHtml(embed_page_backend_addr(client_ip, &read_page_file("webpages/templates/login.html")))
+async fn login() -> content::RawHtml<String> {
+	content::RawHtml(read_page_file("webpages/templates/login.html").replace("%|%|CHALLENGE|%|%", &generate_challenge()))
 }
 
 
@@ -55,7 +46,8 @@ fn compare_response(challenge: &str, username: &str, response: &str) -> bool {
 }
 
 fn generate_challenge() -> String {
-	todo!();	// TODO: time-based (~10s? how to generate?) also send strings of different lengths and contents to reduce predictability
+	"TEMP_CHALLENGE".into()	// TODO: time-based (~10s? how to generate?) also send strings of different lengths and contents to reduce predictability
+	// TODO: SHA256 digest of stored random value combined with timestamp?
 }
 
 //	User validation
@@ -88,8 +80,8 @@ fn index() -> Redirect {
 }
 
 #[get("/home")]
-async fn home(client_ip: IpAddr) -> content::RawHtml<String> {
-	content::RawHtml(embed_page_backend_addr(client_ip, &read_page_file("webpages/templates/index.html")))
+async fn home() -> Option<NamedFile> {
+	NamedFile::open("webpages/index.html").await.ok()
 }
 
 

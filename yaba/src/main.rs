@@ -41,12 +41,25 @@ async fn login() -> content::RawHtml<String> {
 
 // User authentication functions
 //	Challenge-response protocol
-fn compare_response(challenge: &str, username: &str, response: &str) -> bool {
+let mut challenge_map = HashMap<IpAddr, (String, Instant)>::new();
+
+
+fn compare_response(challenge: &str, username: &str, response_ciphertext: &str) -> bool {
 	todo!();	// TODO: first call validateUser(username), then use that result to get the user passkey and generate the appropriate response to compare against (decrypt response before comparison)
 }
 
-fn generate_challenge() -> String {
-	"TEMP_CHALLENGE".into()	// TODO: time-based (~10s? how to generate?) also send strings of different lengths and contents to reduce predictability
+fn generate_challenge(client_ip: IpAddr) -> String {
+	let client_challenge = challenge_map.get(client_it);
+	if client_challenge.is_none_or(|(_, instant_given)| instant_given.elapsed() > Duration::from_secs(10)) {
+		challenge_map.remove(client_ip);
+		let challenge = "TODO CHALLENGE GEN"	// TODO: generate new challenge
+		challenge_map.insert(client_ip, (challenge, Instant::now()));
+		return challenge;
+	}
+	else {
+		return challenge_map.remove(client_ip).0;
+	}
+	// TODO: time-based (~10s? how to generate?) also send strings of different lengths and contents to reduce predictability
 	// TODO: SHA256 digest of stored random value combined with timestamp?
 }
 

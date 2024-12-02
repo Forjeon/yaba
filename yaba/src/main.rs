@@ -1,19 +1,22 @@
 #[macro_use] extern crate rocket;
 
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{ BufReader, Read };
 use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
+use std::sync::Mutex;
+use std::time::{ Duration, Instant, SystemTime };
 
-use rocket::{ Rocket, Build };
+use rocket::{ Build, Rocket, State };
 use rocket::http::{ Cookie, CookieJar };
 use rocket::fs::{ FileServer, NamedFile, relative };
-use rocket::fairing::{ self, AdHoc };
+use rocket::fairing::{ AdHoc, self };
 use rocket::response::{ Redirect, content };
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
-//use sha256;
-use openssl::{ base64, rsa, sha };
+use hex;
+use openssl::{ base64, rsa, sha::sha256 };
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -34,33 +37,39 @@ fn read_page_file(filepath: &str) -> String {
 
 // Login routes
 #[get("/")]
-async fn login() -> content::RawHtml<String> {
-	content::RawHtml(read_page_file("webpages/templates/login.html").replace("%|%|CHALLENGE|%|%", &generate_challenge()))
+async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> content::RawHtml<String> {
+	// Embeds a challenge in the login page JS script, then replies to the client with the login page as HTML
+	content::RawHtml(read_page_file("webpages/templates/login.html").replace("%|%|CHALLENGE|%|%", &generate_challenge(client_ip, challenge_map_state)))
 }
 
 
 // User authentication functions
 //	Challenge-response protocol
-let mut challenge_map = HashMap<IpAddr, (String, Instant)>::new();
-
-
 fn compare_response(challenge: &str, username: &str, response_ciphertext: &str) -> bool {
 	todo!();	// TODO: first call validateUser(username), then use that result to get the user passkey and generate the appropriate response to compare against (decrypt response before comparison)
 }
 
-fn generate_challenge(client_ip: IpAddr) -> String {
-	let client_challenge = challenge_map.get(client_it);
+fn generate_challenge(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> String {
+	// Check the challenge map for the challenge for this client
+	let mut challenge_map = challenge_map_state.lock().unwrap();
+	let client_challenge = challenge_map.get(&client_ip);
+
+	// Validate the client challenge
+	//	Recreate the challenge if it has expired (or never existed)
 	if client_challenge.is_none_or(|(_, instant_given)| instant_given.elapsed() > Duration::from_secs(10)) {
-		challenge_map.remove(client_ip);
-		let challenge = "TODO CHALLENGE GEN"	// TODO: generate new challenge
-		challenge_map.insert(client_ip, (challenge, Instant::now()));
+		println!("DEBUG: NONE OR EXPIRED");//FIXME:DEL
+		challenge_map.remove(&client_ip);
+		// TODO: SHA256 current time and take random substring of that as challenge
+		let challenge: String = "TODO CHALLENGE GEN".into();
+		let challenge = hex::encode(sha256(SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_nanos().to_le_bytes()));
+		challenge_map.insert(client_ip, (challenge.clone(), Instant::now()));
 		return challenge;
 	}
+	//	Pop the client challenge from the challenge map if it is valid
 	else {
-		return challenge_map.remove(client_ip).0;
+		println!("DEBUG: VALID");//FIXME:DEL
+		return challenge_map.remove(&client_ip).unwrap().0;
 	}
-	// TODO: time-based (~10s? how to generate?) also send strings of different lengths and contents to reduce predictability
-	// TODO: SHA256 digest of stored random value combined with timestamp?
 }
 
 //	User validation
@@ -196,7 +205,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 
 
 // NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
-// NOTE: RustCrypto RSA (rsa crate) was found to be vulnerable to the Marvin Attack by a third party; the crate is actively being remidiated to address this
+// NOTE: yaba could be vulnerable to browser switching on the same client IP / IP spoofing, as the only key into the challenge-response map is the client IP
 
 
 // Security attacks to defend against TODO:
@@ -248,5 +257,6 @@ fn rocket() -> _ {
 		.mount("/category", routes![get_cats])
 		.mount("/account", routes![get_accs])
 		.mount("/transaction", routes![get_trans_list, log_trans])
+		.manage(Mutex::new(HashMap::<IpAddr, (String, Instant)>::new()))
 }
 

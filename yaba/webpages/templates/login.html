@@ -16,7 +16,7 @@
 			<label for="login-pwd">Password</label>
 			<input type="password" id="login-pwd">
 
-			<button type="button" onclick="testLogin();">Log in</button>
+			<button type="button" onclick="logIn();">Log in</button>
 
 			<input type="file" onchange="readFile(event)">
 		</div>
@@ -24,38 +24,79 @@
 </html>
 
 <script>
-	const CHALLENGE = "%|%|CHALLENGE|%|%";
-	var pubkeyFile = "NONE";
+	const CHALLENGE = '%|%|CHALLENGE|%|%';
+	var pubkeyFilepath = '';
 
 
 	function readFile(e) {
-		pubkeyFile = e.target.files[0];
-		/*
-		var file = e.target.files[0];
-		if (!file) return;
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			pubkey = e.target.result;
-		};
-		reader.readAsText(file);
-   		*/
+		pubkeyFilepath = e.target.files[0];
 	}
-	async function testLogin() {
-		const username = $("#login-name").val();
-		const password = $("#login-pwd").val();
-		const localDigest = await digestPassword(password);
 
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			alert("CONTENTS:\n" + e.target.result);
-			alert("name: |" + $("#login-name").val() + "|\npwd: |" + $("#login-pwd").val() + "|\nkey: |" + localDigest + "|");
-		};
-		reader.readAsText(pubkeyFile);
+
+	async function logIn() {
+		const username = $('#login-name').val();
+		const password = $('#login-pwd').val();
+		const digest = await digestPassword(password);
+		// TODO: GET RID OF THIS VARIABLES (CONSTRUCT WHEN AND WHERE NEEDED)
+
+		if (pubkeyFilepath == '') {
+			alert('Must select a key');
+		}
+		else {
+			var reader = new FileReader();
+			reader.onload = async function(e) {
+				const contents = e.target.result;
+				alert('CONTENTS:\n' + contents);//FIXME:DEL
+				alert('name: |' + $('#login-name').val() + '|\npwd: |' + $('#login-pwd').val() + '|\nkey: |' + digest + '|');//FIXME:DEL
+
+				const response = new Uint8Array(await window.crypto.subtle.encrypt(
+					{ name: 'RSA-OAEP' },
+					await getKey(contents.substring(26, contents.length - 25)),
+					new TextEncoder().encode('test!')//new TextEncoder().encode(CHALLENGE + digest + username)
+				));
+				await function() {
+					return $.ajax({
+						type: 'POST',
+						url: '/login',
+						data: response,
+						success: function(data, status) {
+							alert('Data: ' + data + '\nStatus: ' + status);
+							//window.location.replace(data);
+						},
+						contentType: 'application/octet-stream',
+						dataType: 'text'
+					});
+				}();
+			};
+			reader.readAsText(pubkeyFilepath);
+		}
 	}
+	
+
+	function stringToArrayBuffer(str) {
+		const buf = new ArrayBuffer(str.length);
+		const bufView = new Uint8Array(buf);
+		for (let i = 0; i < str.length; ++i) {
+			bufView[i] = str.charCodeAt(i);
+		}
+		return buf;
+	}
+
+
+	async function getKey(contents) {
+		return await window.crypto.subtle.importKey(
+			'spki',
+			stringToArrayBuffer(window.atob(contents)),
+			{ name: 'RSA-OAEP', hash: 'SHA-256' },
+			true,
+			['encrypt']
+		);
+	}
+
 
 	async function digestPassword(pwd) {
-		const hash = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(pwd));
-		return Array.from(new Uint8Array(hash)).map((x) => x.toString(16).padStart(2, "0")).join("");
+		const hash = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+		return Array.from(new Uint8Array(hash)).map((x) => x.toString(16).padStart(2, '0')).join('');
 	}
 </script>
 

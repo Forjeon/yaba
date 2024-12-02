@@ -280,8 +280,6 @@
 			await function() {
 				return $.ajax({
 					type: 'POST',
-					//url: BACKEND_ADDR + '/transaction',
-					url: '/transaction',
 					url: '/transaction',
 					data: JSON.stringify({date: $newTransDate, desc: $newTransDesc, cat: Number($newTransCat), acc: Number($newTransAcc), amt: $newTransAmt}),
 					success: function(data, status) {

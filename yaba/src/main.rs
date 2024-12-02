@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{ BufReader, Read };
+use std::io::{ BufRead, BufReader, Read };
 use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
 use std::sync::Mutex;
 use std::time::{ Duration, Instant, SystemTime };
@@ -16,7 +16,10 @@ use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
 use hex;
-use openssl::{ base64, rsa, sha::sha256 };
+use openssl::base64;
+use openssl::pkey::Private;
+use openssl::rsa::{ Padding, Rsa };
+use openssl::sha::sha256;
 use rand::{ Rng, thread_rng };
 
 use yaba::schema::*;
@@ -44,14 +47,24 @@ async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAd
 }
 
 
-// TODO: #[post("/", format = "application/octet-stream", data = "<data>")]
-// TODO: async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {	// TODO: return type?
-#[post("/", format = "text/plain", data = "<data>")]
-async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: String) -> String {	// TODO: return type?
-	todo!();	// TODO
+#[post("/", format = "application/octet-stream", data = "<data>")]
+async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {
+	println!("DEBUG\nDEBUG: data={:?}|\nDEBUG", data);
+	challenge_map_state.lock().unwrap().remove(&client_ip);
+	let key = get_private_key();
+	let mut TEST = vec![0u8; key.size() as usize];
+	let test_bytes = key.private_decrypt(&data, &mut TEST, Padding::PKCS1_OAEP);
+	println!("DEBUG: {:?}\nDEBUG: bytes={:?}", TEST, test_bytes);
 	// TODO: client will send ciphertext of the concatenation `challenge + passkey + username`
 	// TODO: delete client entry from challenge map upon success or failure
 	// TODO: redirect to index page (after creating session cookie) upon success or to new login page upon failure
+	let login_successful = false;	//FIXME:TEMP
+	if login_successful {
+		"/home".into()
+	}
+	else {
+		"/login".into()
+	}
 }
 
 
@@ -110,6 +123,24 @@ fn get_compare_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<H
 	else {
 		challenge_map.get(&client_ip).unwrap().0.clone()
 	}
+}
+
+
+fn get_private_key() -> Rsa<Private> {
+	// Read private key PEM file
+	let pem_filepath = "testkey/test.pem";
+	/*
+	let pem_contents: String = BufReader::new(File::open(pem_filepath).unwrap()).lines().skip(1).take_while(|line| !line.as_ref().unwrap().contains("-")).map(|line| line.unwrap().trim().into()).collect::<Vec<String>>().join("");
+
+	// Decode PEM contents
+	let key_bytes = base64::decode_block(&pem_contents).unwrap();
+
+	// Get private key
+	Rsa::private_key_from_pem(&key_bytes).unwrap()
+	*/
+	let mut pem_contents = String::new();
+	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
+	Rsa::private_key_from_pem(pem_contents.as_bytes()).unwrap()
 }
 
 
@@ -254,6 +285,7 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 
 // NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
 // NOTE: yaba could be vulnerable to browser switching on the same client IP / IP spoofing, as the only key into the challenge-response map is the client IP
+// NOTE: yaba login resists inference attacks by giving no warning or error details upon failed login, instead simply reloading the login page
 
 
 // Security attacks to defend against TODO:

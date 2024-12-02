@@ -17,6 +17,7 @@ use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
 use hex;
 use openssl::{ base64, rsa, sha::sha256 };
+use rand::{ Rng, thread_rng };
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -39,56 +40,100 @@ fn read_page_file(filepath: &str) -> String {
 #[get("/")]
 async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> content::RawHtml<String> {
 	// Embeds a challenge in the login page JS script, then replies to the client with the login page as HTML
-	content::RawHtml(read_page_file("webpages/templates/login.html").replace("%|%|CHALLENGE|%|%", &generate_challenge(client_ip, challenge_map_state)))
+	content::RawHtml(read_page_file("webpages/templates/login.html").replace("%|%|CHALLENGE|%|%", &get_client_challenge(&client_ip, challenge_map_state)))
+}
+
+
+// TODO: #[post("/", format = "application/octet-stream", data = "<data>")]
+// TODO: async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {	// TODO: return type?
+#[post("/", format = "text/plain", data = "<data>")]
+async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: String) -> String {	// TODO: return type?
+	todo!();	// TODO
+	// TODO: client will send ciphertext of the concatenation `challenge + passkey + username`
+	// TODO: delete client entry from challenge map upon success or failure
+	// TODO: redirect to index page (after creating session cookie) upon success or to new login page upon failure
 }
 
 
 // User authentication functions
 //	Challenge-response protocol
-fn compare_response(challenge: &str, username: &str, response_ciphertext: &str) -> bool {
-	todo!();	// TODO: first call validateUser(username), then use that result to get the user passkey and generate the appropriate response to compare against (decrypt response before comparison)
+fn generate_challenge(client_ip: &IpAddr) -> String {
+	// Get the timestamp and client_IP as byte arrays
+	let timestamp_bytes = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_nanos().to_le_bytes();
+
+	let client_ip_string = client_ip.to_string();
+	let client_ip_bytes = client_ip_string.as_bytes();
+
+	// Concatenate the timestamp and client IP byte arrays
+	let mut challenge_bytes = Vec::<u8>::new();
+	challenge_bytes.extend_from_slice(&timestamp_bytes);
+	challenge_bytes.extend_from_slice(client_ip_bytes);
+	
+	// Generate the challenge
+	//	Hash the challenge bytes
+	let challenge_hash = hex::encode(sha256(&challenge_bytes));
+
+	//	Generate random substring endpoints
+	let mut rng = thread_rng();
+	let mut challenge_start = rng.gen_range(0..31);
+	let mut challenge_end = rng.gen_range(0..31);
+
+	//	Swap endpoints if necessary
+	if challenge_end < challenge_start {
+		(challenge_start, challenge_end) = (challenge_end, challenge_start);
+	}
+
+	// Return challenge
+	challenge_hash[challenge_start..challenge_end].into()
 }
 
-fn generate_challenge(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> String {
-	// Check the challenge map for the challenge for this client
+
+fn get_client_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> String {
 	let mut challenge_map = challenge_map_state.lock().unwrap();
-	let client_challenge = challenge_map.get(&client_ip);
-
-	// Validate the client challenge
-	//	Recreate the challenge if it has expired (or never existed)
-	if client_challenge.is_none_or(|(_, instant_given)| instant_given.elapsed() > Duration::from_secs(10)) {
-		println!("DEBUG: NONE OR EXPIRED");//FIXME:DEL
-		challenge_map.remove(&client_ip);
-		// TODO: SHA256 current time and take random substring of that as challenge
-		let challenge: String = "TODO CHALLENGE GEN".into();
-		let challenge = hex::encode(sha256(SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_nanos().to_le_bytes()));
-		challenge_map.insert(client_ip, (challenge.clone(), Instant::now()));
-		return challenge;
+	
+	// Create the client challenge if necessary
+	if !challenge_map.contains_key(&client_ip) {
+		challenge_map.insert(client_ip.clone(), (generate_challenge(client_ip), Instant::now()));
 	}
-	//	Pop the client challenge from the challenge map if it is valid
+
+	// Return client challenge
+	challenge_map.get(&client_ip).unwrap().0.clone()
+}
+
+
+fn get_compare_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> String {
+	let challenge_map = challenge_map_state.lock().unwrap();
+
+	if !challenge_map.contains_key(&client_ip) || challenge_map.get(&client_ip).unwrap().1.elapsed() > Duration::from_secs(10) {
+		generate_challenge(client_ip)
+	}
 	else {
-		println!("DEBUG: VALID");//FIXME:DEL
-		return challenge_map.remove(&client_ip).unwrap().0;
+		challenge_map.get(&client_ip).unwrap().0.clone()
 	}
 }
+
 
 //	User validation
 fn increment_bad_attempts(username: &str) {
 	todo!();
 }
 
+
 fn reset_bad_attempts(username: &str) {
 	todo!();
 }
 
+
 fn validate_user(username: &str) -> Option<String> {
-	todo!();	// TODO: first try to get username from db with `SELECT Name FROM Users WHERE Name = <username> LIMIT 1;` and then validate that the BadAttempts for that user are less than 3 and return Some(username) (or None if any of those steps failed)
+	Some(username.into())	// TODO: first try to get username from db with `SELECT Name FROM Users WHERE Name = <username> LIMIT 1;` and then validate that the BadAttempts for that user are less than 3 and return Some(username) (or None if any of those steps failed)
 }
+
 
 //	User session
 fn create_user_session(cookie_jar: &CookieJar<'_>) {
 	todo!();	// TODO: id is "session", value is username; max age is 10 minutes, expires is Session
 }
+
 
 fn validate_user_session(cookie_jar: &CookieJar<'_>) -> bool {
 	todo!();	// TODO: get the user session private cookie (return false if no such cookie) and validate it (return false if invalid)
@@ -100,6 +145,7 @@ fn validate_user_session(cookie_jar: &CookieJar<'_>) -> bool {
 fn index() -> Redirect {
 	Redirect::to(uri!("/home"))
 }
+
 
 #[get("/home")]
 async fn home() -> Option<NamedFile> {
@@ -121,6 +167,7 @@ async fn get_cats(mut db:Connection<Db>) -> String {
 	serde_json::to_string(&results).expect("Error serializing categories")
 }
 
+
 //	Accounts
 #[get("/")]
 async fn get_accs(mut db:Connection<Db>) -> String {
@@ -132,6 +179,7 @@ async fn get_accs(mut db:Connection<Db>) -> String {
 
 	serde_json::to_string(&results).expect("Error serializing accounts")
 }
+
 
 //	Full transaction list
 #[get("/list")]
@@ -225,10 +273,11 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 // TODO: user authentication
 	// login page will accept username and password simultaneously without any intermediate communication with backend before challenge response; embed challenge in login page somehow?
 	// User session will only last ten minutes, after which the page is reloaded and should redirect to login page
-// TODO: set up E & J clients to trust yaba TLS snakeoil
 // TODO: extract interface code to backend
 // TODO: revamp REST APIs for cleaner and more controlled access
+	// Send ints and other rigid types as much as possible, heavily validate and sanitize string input (desc, etc.)
 // TODO: obfuscate client JS
+// TODO: set up E & J clients to trust yaba TLS snakeoil
 
 
 // yaba features TODO:
@@ -246,13 +295,14 @@ async fn fetch_db(rocket: Rocket<Build>) -> fairing::Result {
 	if let Some(_) = Db::fetch(&rocket) { Ok(rocket) } else { Err(rocket) }
 }
 
+
 #[launch]
 fn rocket() -> _ {
 	rocket::build()
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
 		.mount("/", routes![index, home])
-		.mount("/login", routes![login])
+		.mount("/login", routes![login, log_in])
 		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/category", routes![get_cats])
 		.mount("/account", routes![get_accs])

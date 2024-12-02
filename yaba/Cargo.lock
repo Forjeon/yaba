@@ -3246,6 +3246,7 @@ dependencies = [
  "diesel-derive-enum",
  "hex",
  "openssl",
+ "rand",
  "rocket",
  "rocket_db_pools",
  "serde",

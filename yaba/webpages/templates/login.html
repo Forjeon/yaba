@@ -34,26 +34,23 @@
 
 
 	async function logIn() {
-		const username = $('#login-name').val();
-		const password = $('#login-pwd').val();
-		const digest = await digestPassword(password);
-		// TODO: GET RID OF THIS VARIABLES (CONSTRUCT WHEN AND WHERE NEEDED)
-
 		if (pubkeyFilepath == '') {
 			alert('Must select a key');
 		}
 		else {
 			var reader = new FileReader();
 			reader.onload = async function(e) {
+				const username = $('#login-name').val();
+				const password = $('#login-pwd').val();
+				const digest = await digestPassword(password);
 				const contents = e.target.result;
-				alert('CONTENTS:\n' + contents);//FIXME:DEL
-				alert('name: |' + $('#login-name').val() + '|\npwd: |' + $('#login-pwd').val() + '|\nkey: |' + digest + '|');//FIXME:DEL
 
 				const response = new Uint8Array(await window.crypto.subtle.encrypt(
 					{ name: 'RSA-OAEP' },
 					await getKey(contents.substring(26, contents.length - 25)),
-					new TextEncoder().encode('test!')//new TextEncoder().encode(CHALLENGE + digest + username)
+					new TextEncoder().encode('Test!')//FIXME:REPLACEnew TextEncoder().encode(CHALLENGE + digest + username)
 				));
+				console.log(response);//FIXME:DEL
 				await function() {
 					return $.ajax({
 						type: 'POST',
@@ -64,7 +61,8 @@
 							//window.location.replace(data);
 						},
 						contentType: 'application/octet-stream',
-						dataType: 'text'
+						dataType: 'text',
+						processData: false
 					});
 				}();
 			};

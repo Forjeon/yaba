@@ -14,6 +14,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 openssl = "0.10.68"
 hex = "0.4.3"
 rand = "0.8.5"
+rsa = { version = "0.9.7", features = ["sha2"] }
 
 [dependencies.rocket_db_pools]
 version = "0.2.0"

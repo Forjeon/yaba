@@ -16,11 +16,12 @@ use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
 use hex;
-use openssl::base64;
 use openssl::pkey::Private;
-use openssl::rsa::{ Padding, Rsa };
-use openssl::sha::sha256;
+use openssl::rsa::{ Padding as OSSLPadding, Rsa as OSSLRsa };
+use openssl::sha::sha256 as OSSLsha256;
 use rand::{ Rng, thread_rng };
+use rsa::{ RsaPrivateKey, RsaPublicKey, Oaep, sha2::Sha256 };
+use rsa::pkcs1::{ DecodeRsaPrivateKey, DecodeRsaPublicKey };
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -49,16 +50,77 @@ async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAd
 
 #[post("/", format = "application/octet-stream", data = "<data>")]
 async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {
-	println!("DEBUG\nDEBUG: data={:?}|\nDEBUG", data);
-	challenge_map_state.lock().unwrap().remove(&client_ip);
+	println!("DEBUGGG: data={:?}|", data);//FIXME:DEL
+	/*
+	let pem_filepath = "private.pem";
+	let mut pem_contents = String::new();
+	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
+
+	let test_pkey = RsaPrivateKey::from_pkcs1_pem(&pem_contents).expect("DIDN'T GET PKEY");
+
+	let mut rng = thread_rng();
+	let test_key = test_pkey.to_public_key();
+	let test_data = b"Test!";
+	let test_encrypted = test_key.encrypt(&mut rng, Oaep::new::<Sha256>(), test_data).expect("DIDN'T ENCRYPT");
+	println!("DEBUG: PUBdata={:?}", test_encrypted);
+
+	let test_plaintext = test_pkey.decrypt(Oaep::new::<Sha256>(), &test_encrypted).expect("DIDN'T DECRYPT");
+	println!("DEBUG: PUBdecrypted={:?}\nDEBUG: is={:?}", test_plaintext, std::str::from_utf8(&test_plaintext));
+	*/
+
+	let pem_filepath = "public.pem";//FIXME:PICK KEYPAIR TO USE
+	let mut pem_contents = String::new();
+	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
+
+	let test_key = OSSLRsa::public_key_from_pem(pem_contents.as_bytes()).unwrap();
+	let test_data = b"Test!";
+	let mut test_encrypted = vec![0u8; test_key.size() as usize];
+	let test_encrypted_bytes = test_key.public_encrypt(test_data, &mut test_encrypted, OSSLPadding::PKCS1_OAEP);
+	println!("DEBUG: PUBdata={:?}\nDEBUG: PUBbytes={:?}", test_encrypted, test_encrypted_bytes);
+
+	let test_pkey = get_private_key();
+	let mut test_plaintext_buf = vec![0u8; test_pkey.size() as usize];
+	let test_plaintext_bytes = test_pkey.private_decrypt(&test_encrypted, &mut test_plaintext_buf, OSSLPadding::PKCS1_OAEP);
+	println!("DEBUG: PUBdecrypted={:?}\nDEBUG: is={:?}|\nDEBUG: PUBbytes={:?}", test_plaintext_buf, std::str::from_utf8(&test_plaintext_buf), test_plaintext_bytes);//FIXME:DEL
+
+	// Get client response
+	//	Decrypt response
+	println!("DEBUG\nDEBUG: data={:?}\nDEBUG: bytes={:?}", data, data.len());//FIXME:DEL
+
+	let pem_filepath = "private.pem";
+	let mut pem_contents = String::new();
+	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
+
+	let private_key = RsaPrivateKey::from_pkcs1_pem(&pem_contents).expect("DIDN'T GET PKEY");
+	let client_response: String = std::str::from_utf8(&private_key.decrypt(Oaep::new::<Sha256>(), &data).expect("DIDN'T DECRYPT")).unwrap().into();
+	println!("DEBUGG: {:?}", client_response);
+
+	/*
 	let key = get_private_key();
-	let mut TEST = vec![0u8; key.size() as usize];
-	let test_bytes = key.private_decrypt(&data, &mut TEST, Padding::PKCS1_OAEP);
-	println!("DEBUG: {:?}\nDEBUG: bytes={:?}", TEST, test_bytes);
+	let mut plaintext_buf = vec![0u8; key.size() as usize];
+	let plaintext_bytes = key.private_decrypt(&data, &mut plaintext_buf, OSSLPadding::PKCS1_OAEP);
+	//let plaintext_bytes = key.private_decrypt(&decoded_data, &mut plaintext_buf, Padding::PKCS1_OAEP);
+	println!("DEBUG: {:?}\nDEBUG: bytes={:?}", plaintext_buf, plaintext_bytes);//FIXME:DEL
+	*/
+
+	//	Split into challenge and username
 	// TODO: client will send ciphertext of the concatenation `challenge + passkey + username`
-	// TODO: delete client entry from challenge map upon success or failure
-	// TODO: redirect to index page (after creating session cookie) upon success or to new login page upon failure
-	let login_successful = false;	//FIXME:TEMP
+
+	// Validate username
+	let login_successful = false;//FIXME:TEMP
+	// TODO
+
+	// Validate challenge against compare challenge
+	//	Get compare challenge
+	// TODO
+
+	//	Compare to client challenge
+	// TODO
+
+	//	Clear client entry in challenge map
+	challenge_map_state.lock().unwrap().remove(&client_ip);
+
+	// Redirect based on challenge-response success
 	if login_successful {
 		"/home".into()
 	}
@@ -84,7 +146,7 @@ fn generate_challenge(client_ip: &IpAddr) -> String {
 	
 	// Generate the challenge
 	//	Hash the challenge bytes
-	let challenge_hash = hex::encode(sha256(&challenge_bytes));
+	let challenge_hash = hex::encode(OSSLsha256(&challenge_bytes));
 
 	//	Generate random substring endpoints
 	let mut rng = thread_rng();
@@ -126,21 +188,11 @@ fn get_compare_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<H
 }
 
 
-fn get_private_key() -> Rsa<Private> {
-	// Read private key PEM file
-	let pem_filepath = "testkey/test.pem";
-	/*
-	let pem_contents: String = BufReader::new(File::open(pem_filepath).unwrap()).lines().skip(1).take_while(|line| !line.as_ref().unwrap().contains("-")).map(|line| line.unwrap().trim().into()).collect::<Vec<String>>().join("");
-
-	// Decode PEM contents
-	let key_bytes = base64::decode_block(&pem_contents).unwrap();
-
-	// Get private key
-	Rsa::private_key_from_pem(&key_bytes).unwrap()
-	*/
+fn get_private_key() -> OSSLRsa<Private> {
+	let pem_filepath = "private.pem";
 	let mut pem_contents = String::new();
 	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
-	Rsa::private_key_from_pem(pem_contents.as_bytes()).unwrap()
+	OSSLRsa::private_key_from_pem(pem_contents.as_bytes()).unwrap()
 }
 
 

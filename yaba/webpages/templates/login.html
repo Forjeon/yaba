@@ -42,23 +42,21 @@
 			reader.onload = async function(e) {
 				const username = $('#login-name').val();
 				const password = $('#login-pwd').val();
-				const digest = await digestPassword(password);
+				const digest = await msgDigest(password);
 				const contents = e.target.result;
 
 				const response = new Uint8Array(await window.crypto.subtle.encrypt(
 					{ name: 'RSA-OAEP' },
 					await getKey(contents.substring(26, contents.length - 25)),
-					new TextEncoder().encode('Test!')//FIXME:REPLACEnew TextEncoder().encode(CHALLENGE + digest + username)
+					new TextEncoder().encode(await msgDigest(CHALLENGE + digest) + username)
 				));
-				console.log(response);//FIXME:DEL
 				await function() {
 					return $.ajax({
 						type: 'POST',
 						url: '/login',
 						data: response,
 						success: function(data, status) {
-							alert('Data: ' + data + '\nStatus: ' + status);
-							//window.location.replace(data);
+							alert('FIXME!!!\nData: ' + data + '\nStatus: ' + status);//FIXME:REPLACEwindow.location.replace(data);
 						},
 						contentType: 'application/octet-stream',
 						dataType: 'text',
@@ -92,7 +90,7 @@
 	}
 
 
-	async function digestPassword(pwd) {
+	async function msgDigest(pwd) {
 		const hash = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
 		return Array.from(new Uint8Array(hash)).map((x) => x.toString(16).padStart(2, '0')).join('');
 	}

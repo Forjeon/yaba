@@ -16,12 +16,9 @@ use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
 
 use hex;
-use openssl::pkey::Private;
-use openssl::rsa::{ Padding as OSSLPadding, Rsa as OSSLRsa };
 use openssl::sha::sha256 as OSSLsha256;
 use rand::{ Rng, thread_rng };
-use rsa::{ RsaPrivateKey, RsaPublicKey, Oaep, sha2::Sha256 };
-use rsa::pkcs1::{ DecodeRsaPrivateKey, DecodeRsaPublicKey };
+use rsa::{ RsaPrivateKey, RsaPublicKey, Oaep, pkcs1::DecodeRsaPrivateKey, sha2::Sha256 };
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -49,69 +46,28 @@ async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAd
 
 
 #[post("/", format = "application/octet-stream", data = "<data>")]
-async fn log_in(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {
-	println!("DEBUGGG: data={:?}|", data);//FIXME:DEL
-	/*
-	let pem_filepath = "private.pem";
-	let mut pem_contents = String::new();
-	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
-
-	let test_pkey = RsaPrivateKey::from_pkcs1_pem(&pem_contents).expect("DIDN'T GET PKEY");
-
-	let mut rng = thread_rng();
-	let test_key = test_pkey.to_public_key();
-	let test_data = b"Test!";
-	let test_encrypted = test_key.encrypt(&mut rng, Oaep::new::<Sha256>(), test_data).expect("DIDN'T ENCRYPT");
-	println!("DEBUG: PUBdata={:?}", test_encrypted);
-
-	let test_plaintext = test_pkey.decrypt(Oaep::new::<Sha256>(), &test_encrypted).expect("DIDN'T DECRYPT");
-	println!("DEBUG: PUBdecrypted={:?}\nDEBUG: is={:?}", test_plaintext, std::str::from_utf8(&test_plaintext));
-	*/
-
-	let pem_filepath = "public.pem";//FIXME:PICK KEYPAIR TO USE
-	let mut pem_contents = String::new();
-	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
-
-	let test_key = OSSLRsa::public_key_from_pem(pem_contents.as_bytes()).unwrap();
-	let test_data = b"Test!";
-	let mut test_encrypted = vec![0u8; test_key.size() as usize];
-	let test_encrypted_bytes = test_key.public_encrypt(test_data, &mut test_encrypted, OSSLPadding::PKCS1_OAEP);
-	println!("DEBUG: PUBdata={:?}\nDEBUG: PUBbytes={:?}", test_encrypted, test_encrypted_bytes);
-
-	let test_pkey = get_private_key();
-	let mut test_plaintext_buf = vec![0u8; test_pkey.size() as usize];
-	let test_plaintext_bytes = test_pkey.private_decrypt(&test_encrypted, &mut test_plaintext_buf, OSSLPadding::PKCS1_OAEP);
-	println!("DEBUG: PUBdecrypted={:?}\nDEBUG: is={:?}|\nDEBUG: PUBbytes={:?}", test_plaintext_buf, std::str::from_utf8(&test_plaintext_buf), test_plaintext_bytes);//FIXME:DEL
-
+async fn log_in(mut db: Connection<Db>, client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {
 	// Get client response
 	//	Decrypt response
-	println!("DEBUG\nDEBUG: data={:?}\nDEBUG: bytes={:?}", data, data.len());//FIXME:DEL
-
-	let pem_filepath = "private.pem";
-	let mut pem_contents = String::new();
-	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
-
-	let private_key = RsaPrivateKey::from_pkcs1_pem(&pem_contents).expect("DIDN'T GET PKEY");
-	let client_response: String = std::str::from_utf8(&private_key.decrypt(Oaep::new::<Sha256>(), &data).expect("DIDN'T DECRYPT")).unwrap().into();
-	println!("DEBUGG: {:?}", client_response);
-
-	/*
-	let key = get_private_key();
-	let mut plaintext_buf = vec![0u8; key.size() as usize];
-	let plaintext_bytes = key.private_decrypt(&data, &mut plaintext_buf, OSSLPadding::PKCS1_OAEP);
-	//let plaintext_bytes = key.private_decrypt(&decoded_data, &mut plaintext_buf, Padding::PKCS1_OAEP);
-	println!("DEBUG: {:?}\nDEBUG: bytes={:?}", plaintext_buf, plaintext_bytes);//FIXME:DEL
-	*/
+	let private_key = get_private_key();
+	let decrypted_bytes = &private_key.decrypt(Oaep::new::<Sha256>(), &data).expect("Failed to decrypt client response");
+	let client_response: String = std::str::from_utf8(&decrypted_bytes).unwrap().into();
 
 	//	Split into challenge and username
 	// TODO: client will send ciphertext of the concatenation `challenge + passkey + username`
+	let username: String = client_response[64..].into();
+	let client_challenge: String = client_response[..64].into();
+	println!("Received client login: IP={:?}, user='{}', response='{}'", client_ip, username, client_challenge);//FIXME:DEL
 
 	// Validate username
-	let login_successful = false;//FIXME:TEMP
+	let login_successful = true;//FIXME:TEMP
+	let _ = validate_user(&mut db, "bob").await.expect("UHOH");
 	// TODO
 
 	// Validate challenge against compare challenge
 	//	Get compare challenge
+	//let compare_challenge_bytes = f
+	//let compare_challenge = hex::encode(OSSLsha256(
 	// TODO
 
 	//	Compare to client challenge
@@ -179,7 +135,7 @@ fn get_client_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<Ha
 fn get_compare_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> String {
 	let challenge_map = challenge_map_state.lock().unwrap();
 
-	if !challenge_map.contains_key(&client_ip) || challenge_map.get(&client_ip).unwrap().1.elapsed() > Duration::from_secs(10) {
+	if !challenge_map.contains_key(&client_ip) || challenge_map.get(&client_ip).unwrap().1.elapsed() > Duration::from_secs(20) {
 		generate_challenge(client_ip)
 	}
 	else {
@@ -188,27 +144,42 @@ fn get_compare_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<H
 }
 
 
-fn get_private_key() -> OSSLRsa<Private> {
+fn get_private_key() -> RsaPrivateKey {
 	let pem_filepath = "private.pem";
 	let mut pem_contents = String::new();
 	let _ = BufReader::new(File::open(pem_filepath).unwrap()).read_to_string(&mut pem_contents);
-	OSSLRsa::private_key_from_pem(pem_contents.as_bytes()).unwrap()
+	RsaPrivateKey::from_pkcs1_pem(&pem_contents).expect("Failed to get RSA private key")
 }
 
 
 //	User validation
 fn increment_bad_attempts(username: &str) {
-	todo!();
+	println!("INCR BAD ON {username} TODO!");	// TODO
 }
 
 
 fn reset_bad_attempts(username: &str) {
-	todo!();
+	println!("RESET BAD ON {username} TODO!");	// TODO
 }
 
 
-fn validate_user(username: &str) -> Option<String> {
-	Some(username.into())	// TODO: first try to get username from db with `SELECT Name FROM Users WHERE Name = <username> LIMIT 1;` and then validate that the BadAttempts for that user are less than 3 and return Some(username) (or None if any of those steps failed)
+async fn validate_user(db: &mut Connection<Db>, username: &str) -> Option<String> {
+	let result = Users::table
+		.filter(Users::Name.eq(username))
+		.select(UsersStruct::as_select())
+		//.load(db)
+		.first(db)
+		.await;
+
+	println!("VALUSR: {:?}", result);
+	if result.is_err() || result.is_none() || (result.ok().is_some() && result.ok().some().BadAttempts >= 3) {
+		None
+	}
+	else {
+		let validated_username = result.ok().some().Name.
+		reset_bad_attempts(validated_username);
+		Some(validated_username)
+	}
 }
 
 

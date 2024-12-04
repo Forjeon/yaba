@@ -8,9 +8,10 @@ use std::sync::Mutex;
 use std::time::{ Duration, Instant, SystemTime };
 
 use rocket::{ Build, Rocket, State };
-use rocket::http::{ Cookie, CookieJar, SameSite };
-use rocket::fs::{ FileServer, NamedFile, relative };
+use rocket::http::{ Cookie, CookieJar, SameSite, Status };
+use rocket::fs::NamedFile;
 use rocket::fairing::{ AdHoc, self };
+use rocket::request::{ FromRequest, Outcome, Request };
 use rocket::response::{ Redirect, content };
 use rocket_db_pools::{ Database, Connection };
 use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult, self };
@@ -30,6 +31,42 @@ use yaba::models::*;
 struct Db(MysqlPool);
 
 
+// Page authorization request guard
+struct YabaPageUser {}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for YabaPageUser {
+	type Error = ();
+
+	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+		if validate_user_session(&mut request.guard::<Connection<Db>>().await.expect("Failed to get db connection in page user request guard"), request.cookies()).await {
+			Outcome::Success(YabaPageUser {})
+		}
+		else {
+			Outcome::Forward(Status::Unauthorized)
+		}
+	}
+}
+
+
+// API authorization request guard
+struct YabaAPIUser {}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for YabaAPIUser {
+	type Error = ();
+
+	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+		if validate_user_session(&mut request.guard::<Connection<Db>>().await.expect("Failed to get db connection in API user request guard"), request.cookies()).await {
+			Outcome::Success(YabaAPIUser {})
+		}
+		else {
+			Outcome::Error((Status::Unauthorized, ()))
+		}
+	}
+}
+
+
 // Helpers
 fn read_page_file(filepath: &str) -> String {
 	let mut page_content = String::new();
@@ -43,6 +80,12 @@ fn read_page_file(filepath: &str) -> String {
 async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> content::RawHtml<String> {
 	// Embeds a challenge in the login page JS script, then replies to the client with the login page as HTML
 	content::RawHtml(read_page_file("webpages/templates/login.html").replace("%|%|CHALLENGE|%|%", &get_client_challenge(&client_ip, challenge_map_state)))
+}
+
+
+#[get("/login.css")]
+async fn login_css() -> Option<NamedFile> {
+	NamedFile::open("webpages/login.css").await.ok()
 }
 
 
@@ -63,7 +106,7 @@ async fn log_in(cookie_jar: &CookieJar<'_>, mut db: Connection<Db>, client_ip: I
 	challenge_map_state.lock().unwrap().remove(&client_ip);
 
 	// Validate username
-	let success_redirect = "/home".into();
+	let success_redirect = "/yaba".into();
 	let failure_redirect = "/login".into();
 
 	match validate_user(&mut db, &username).await {
@@ -153,15 +196,12 @@ fn get_private_key() -> RsaPrivateKey {
 
 //	User validation
 async fn get_user(db: &mut Connection<Db>, username: &str) -> Result<UsersStruct, rocket_db_pools::diesel::result::Error> {
-	let result = Users::table
+	Users::table
 		.filter(Users::Name.eq(username))
 		.select(UsersStruct::as_select())
 		//.load(db)
 		.first(db)
-		.await;
-
-	println!("VALUSR: {:?}", result);
-	result
+		.await
 }
 
 
@@ -222,13 +262,31 @@ async fn validate_user_session(db: &mut Connection<Db>, cookie_jar: &CookieJar<'
 // Yaba routes and functions
 #[get("/")]
 fn index() -> Redirect {
-	Redirect::to(uri!("/home"))
+	Redirect::to(uri!("/yaba"))
 }
 
 
-#[get("/home")]
-async fn home() -> Option<NamedFile> {
+#[get("/yaba")]
+async fn home(_user: YabaPageUser) -> Option<NamedFile> {
 	NamedFile::open("webpages/index.html").await.ok()
+}
+
+
+#[get("/yaba", rank = 2)]
+fn home_redirect() -> Redirect {
+	Redirect::to(uri!("/login"))
+}
+
+
+#[get("/index.css")]
+async fn home_css(_user: YabaPageUser) -> Option<NamedFile> {
+	NamedFile::open("webpages/index.css").await.ok()
+}
+
+
+#[get("/favicon.svg")]
+async fn favicon() -> Option<NamedFile> {
+	NamedFile::open("webpages/favicon.svg").await.ok()
 }
 
 
@@ -236,7 +294,7 @@ async fn home() -> Option<NamedFile> {
 
 //	Category
 #[get("/")]
-async fn get_cats(mut db:Connection<Db>) -> String {
+async fn get_cats(_user: YabaAPIUser, mut db:Connection<Db>) -> String {
 	let results = TransactionCategory::table
 		.select(TransCat::as_select())
 		.load(&mut db)
@@ -249,7 +307,7 @@ async fn get_cats(mut db:Connection<Db>) -> String {
 
 //	Accounts
 #[get("/")]
-async fn get_accs(mut db:Connection<Db>) -> String {
+async fn get_accs(_user: YabaAPIUser, mut db:Connection<Db>) -> String {
 	let results = PaymentAccount::table
 		.select(PayAcc::as_select())
 		.load(&mut db)
@@ -262,8 +320,7 @@ async fn get_accs(mut db:Connection<Db>) -> String {
 
 //	Full transaction list
 #[get("/list")]
-async fn get_trans_list(cookie_jar: &CookieJar<'_>, mut db: Connection<Db>) -> String {
-	println!("GET TRANS LIST: SESSION VALID={}", validate_user_session(&mut db, cookie_jar).await);//FIXME:DEL
+async fn get_trans_list(_user: YabaAPIUser, mut db: Connection<Db>) -> String {
 		//date, desc, cat, acc, amt
 	let results = Transaction::table
 		.left_join(TransactionInstanceCategory::table.left_join(TransactionCategory::table))
@@ -281,7 +338,7 @@ async fn get_trans_list(cookie_jar: &CookieJar<'_>, mut db: Connection<Db>) -> S
 
 //	Transaction logging
 #[post("/", format = "json", data = "<data>")]
-async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> {
+async fn log_trans(_user: YabaAPIUser, mut db: Connection<Db>, data: String) -> QueryResult<String> {
 	let new_trans_data: Trans_NewData = serde_json::from_str(&data).expect("Error deserializing new transaction data");
 
 	diesel::insert_into(Transaction::table)
@@ -320,8 +377,8 @@ async fn log_trans(mut db: Connection<Db>, data: String) -> QueryResult<String> 
 }
 
 
-// Security Plan TODO:
-// TODO: user authentication:
+// Security Plan DONE!
+// DONE!: user authentication:
 	// login page is sent with embedded nonce
 	// challenge response is pwd SHA256 digest concatenated with challenge and encrypted with yaba server public key
 	// nonce is time-based (derive from nondecreasing datum?) and expires after some short time (e.g. 10s?)
@@ -382,9 +439,8 @@ fn rocket() -> _ {
 	rocket::build()
 		.attach(Db::init())
 		.attach(AdHoc::try_on_ignite("DB Connection", fetch_db))
-		.mount("/", routes![index, home])
+		.mount("/", routes![index, favicon, home, home_css, home_redirect, login_css])
 		.mount("/login", routes![login, log_in])
-		.mount("/", FileServer::from(relative!("webpages")))
 		.mount("/category", routes![get_cats])
 		.mount("/account", routes![get_accs])
 		.mount("/transaction", routes![get_trans_list, log_trans])

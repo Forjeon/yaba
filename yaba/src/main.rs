@@ -13,7 +13,7 @@ use rocket::fs::{ FileServer, NamedFile, relative };
 use rocket::fairing::{ AdHoc, self };
 use rocket::response::{ Redirect, content };
 use rocket_db_pools::{ Database, Connection };
-use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult };
+use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult, self };
 
 use hex;
 use openssl::sha::sha256 as OSSLsha256;
@@ -70,12 +70,12 @@ async fn log_in(cookie_jar: &CookieJar<'_>, mut db: Connection<Db>, client_ip: I
 			// Validate client response
 			let compare_response_preimage = compare_challenge + &passkey;
 			if client_response == hex::encode(OSSLsha256(compare_response_preimage.as_bytes())) {	// Client response matched—log them in as validated user
-				reset_bad_attempts(&username);
+				reset_bad_attempts(&mut db, &username).await;
 				create_user_session(cookie_jar, &username);
 				success_redirect
 			}
 			else {	// Client response failed to match—increment user bad attempts and retry login
-				increment_bad_attempts(&username);
+				increment_bad_attempts(&mut db, &username).await;
 				failure_redirect
 			}
 		},
@@ -151,17 +151,7 @@ fn get_private_key() -> RsaPrivateKey {
 
 
 //	User validation
-fn increment_bad_attempts(username: &str) {
-	println!("INCR BAD ON {username} TODO!");	// TODO
-}
-
-
-fn reset_bad_attempts(username: &str) {
-	println!("RESET BAD ON {username} TODO!");	// TODO
-}
-
-
-async fn validate_user(db: &mut Connection<Db>, username: &str) -> Option<String> {
+async fn get_user(db: &mut Connection<Db>, username: &str) -> Result<UsersStruct, rocket_db_pools::diesel::result::Error> {
 	let result = Users::table
 		.filter(Users::Name.eq(username))
 		.select(UsersStruct::as_select())
@@ -170,7 +160,31 @@ async fn validate_user(db: &mut Connection<Db>, username: &str) -> Option<String
 		.await;
 
 	println!("VALUSR: {:?}", result);
-	match result {
+	result
+}
+
+
+async fn increment_bad_attempts(db: &mut Connection<Db>, username: &str) {
+	let prev_attempts = get_user(db, username).await.expect("Failed to get user for increment_bad_attempts").BadAttempts;
+	let _= diesel::update(Users::table)
+		.filter(Users::Name.eq(username))
+		.set(Users::BadAttempts.eq(prev_attempts + 1))
+		.execute(db)
+		.await;
+}
+
+
+async fn reset_bad_attempts(db: &mut Connection<Db>, username: &str) {
+	let _ = diesel::update(Users::table)
+		.filter(Users::Name.eq(username))
+		.set(Users::BadAttempts.eq(0))
+		.execute(db)
+		.await;
+}
+
+
+async fn validate_user(db: &mut Connection<Db>, username: &str) -> Option<String> {
+	match get_user(db, username).await {
 		Ok(user) => {
 			if user.BadAttempts < 3 {
 				Some(user.Passkey)

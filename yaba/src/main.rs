@@ -2,13 +2,13 @@
 
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{ BufRead, BufReader, Read };
-use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
+use std::io::{ BufReader, Read };
+use std::net::IpAddr;
 use std::sync::Mutex;
 use std::time::{ Duration, Instant, SystemTime };
 
 use rocket::{ Build, Rocket, State };
-use rocket::http::{ Cookie, CookieJar };
+use rocket::http::{ Cookie, CookieJar, SameSite };
 use rocket::fs::{ FileServer, NamedFile, relative };
 use rocket::fairing::{ AdHoc, self };
 use rocket::response::{ Redirect, content };
@@ -18,7 +18,8 @@ use rocket_db_pools::diesel::{ prelude::*, MysqlPool, QueryResult, self };
 use hex;
 use openssl::sha::sha256 as OSSLsha256;
 use rand::{ Rng, thread_rng };
-use rsa::{ RsaPrivateKey, RsaPublicKey, Oaep, pkcs1::DecodeRsaPrivateKey, sha2::Sha256 };
+use rsa::{ RsaPrivateKey, Oaep, pkcs1::DecodeRsaPrivateKey, sha2::Sha256 };
+use time as time_crate;
 
 use yaba::schema::*;
 use yaba::models::*;
@@ -200,13 +201,21 @@ async fn validate_user(db: &mut Connection<Db>, username: &str) -> Option<String
 
 //	User session
 fn create_user_session(cookie_jar: &CookieJar<'_>, username: &str) {
-	println!("CREATE USER SESSION FOR {username} TODO!");	// TODO: id is "session", value is username; max age is 10 minutes, expires is Session
+	let session_cookie = Cookie::build(("session", username.to_string()))
+		.path("/")
+		.same_site(SameSite::Strict)
+		.http_only(true)
+		.max_age(time_crate::Duration::minutes(10))
+		.secure(true);
+	cookie_jar.add_private(session_cookie);
 }
 
 
-fn validate_user_session(cookie_jar: &CookieJar<'_>) -> bool {
-	println!("VALIDATE USER SESSION TODO!");//FIXME:DEL
-	true// TODO: get the user session private cookie (return false if no such cookie) and validate_user() it (return false if invalid)
+async fn validate_user_session(db: &mut Connection<Db>, cookie_jar: &CookieJar<'_>) -> bool {
+	match cookie_jar.get_private("session") {
+		Some(session_cookie) => validate_user(db, session_cookie.value_trimmed()).await.is_some(),
+		None => false,
+	}
 }
 
 
@@ -253,7 +262,8 @@ async fn get_accs(mut db:Connection<Db>) -> String {
 
 //	Full transaction list
 #[get("/list")]
-async fn get_trans_list(mut db:Connection<Db>) -> String {
+async fn get_trans_list(cookie_jar: &CookieJar<'_>, mut db: Connection<Db>) -> String {
+	println!("GET TRANS LIST: SESSION VALID={}", validate_user_session(&mut db, cookie_jar).await);//FIXME:DEL
 		//date, desc, cat, acc, amt
 	let results = Transaction::table
 		.left_join(TransactionInstanceCategory::table.left_join(TransactionCategory::table))

@@ -46,42 +46,40 @@ async fn login(client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAd
 
 
 #[post("/", format = "application/octet-stream", data = "<data>")]
-async fn log_in(mut db: Connection<Db>, client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {
+async fn log_in(cookie_jar: &CookieJar<'_>, mut db: Connection<Db>, client_ip: IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>, data: Vec<u8>) -> String {
 	// Get client response
 	//	Decrypt response
 	let private_key = get_private_key();
 	let decrypted_bytes = &private_key.decrypt(Oaep::new::<Sha256>(), &data).expect("Failed to decrypt client response");
-	let client_response: String = std::str::from_utf8(&decrypted_bytes).unwrap().into();
+	let data_string: String = std::str::from_utf8(&decrypted_bytes).unwrap().into();
 
 	//	Split into challenge and username
-	// TODO: client will send ciphertext of the concatenation `challenge + passkey + username`
-	let username: String = client_response[64..].into();
-	let client_challenge: String = client_response[..64].into();
-	println!("Received client login: IP={:?}, user='{}', response='{}'", client_ip, username, client_challenge);//FIXME:DEL
+	let username: String = data_string[64..].into();
+	let client_response: String = data_string[..64].into();
 
-	// Validate username
-	let login_successful = true;//FIXME:TEMP
-	let _ = validate_user(&mut db, "bob").await.expect("UHOH");
-	// TODO
-
-	// Validate challenge against compare challenge
-	//	Get compare challenge
-	//let compare_challenge_bytes = f
-	//let compare_challenge = hex::encode(OSSLsha256(
-	// TODO
-
-	//	Compare to client challenge
-	// TODO
-
-	//	Clear client entry in challenge map
+	// Get compare challenge and clear out the client entry in the challenge map
+	let compare_challenge = get_compare_challenge(&client_ip, challenge_map_state);
 	challenge_map_state.lock().unwrap().remove(&client_ip);
 
-	// Redirect based on challenge-response success
-	if login_successful {
-		"/home".into()
-	}
-	else {
-		"/login".into()
+	// Validate username
+	let success_redirect = "/home".into();
+	let failure_redirect = "/login".into();
+
+	match validate_user(&mut db, &username).await {
+		Some(passkey) =>  {
+			// Validate client response
+			let compare_response_preimage = compare_challenge + &passkey;
+			if client_response == hex::encode(OSSLsha256(compare_response_preimage.as_bytes())) {	// Client response matched—log them in as validated user
+				reset_bad_attempts(&username);
+				create_user_session(cookie_jar, &username);
+				success_redirect
+			}
+			else {	// Client response failed to match—increment user bad attempts and retry login
+				increment_bad_attempts(&username);
+				failure_redirect
+			}
+		},
+		None => failure_redirect,	// No such user—retry login
 	}
 }
 
@@ -172,25 +170,29 @@ async fn validate_user(db: &mut Connection<Db>, username: &str) -> Option<String
 		.await;
 
 	println!("VALUSR: {:?}", result);
-	if result.is_err() || result.is_none() || (result.ok().is_some() && result.ok().some().BadAttempts >= 3) {
-		None
-	}
-	else {
-		let validated_username = result.ok().some().Name.
-		reset_bad_attempts(validated_username);
-		Some(validated_username)
+	match result {
+		Ok(user) => {
+			if user.BadAttempts < 3 {
+				Some(user.Passkey)
+			}
+			else {
+				None
+			}
+		},
+		_ => None,
 	}
 }
 
 
 //	User session
-fn create_user_session(cookie_jar: &CookieJar<'_>) {
-	todo!();	// TODO: id is "session", value is username; max age is 10 minutes, expires is Session
+fn create_user_session(cookie_jar: &CookieJar<'_>, username: &str) {
+	println!("CREATE USER SESSION FOR {username} TODO!");	// TODO: id is "session", value is username; max age is 10 minutes, expires is Session
 }
 
 
 fn validate_user_session(cookie_jar: &CookieJar<'_>) -> bool {
-	todo!();	// TODO: get the user session private cookie (return false if no such cookie) and validate it (return false if invalid)
+	println!("VALIDATE USER SESSION TODO!");//FIXME:DEL
+	true// TODO: get the user session private cookie (return false if no such cookie) and validate_user() it (return false if invalid)
 }
 
 

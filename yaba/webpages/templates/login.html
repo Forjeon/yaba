@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Yaba Login</title>
+		<link href="login.css" rel="stylesheet">
+		<link href="favicon.svg" rel="icon" type="image/svg+xml">
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<h2>Yaba Login</h2>
+
+		<div>
+			<label for="login-name">Username</label>
+			<input type="text" id="login-name">
+
+			<label for="login-pwd">Password</label>
+			<input type="password" id="login-pwd">
+
+			<button type="button" onclick="logIn();">Log in</button>
+
+			<input type="file" onchange="readFile(event)">
+		</div>
+	</body>
+</html>
+
+<script>
+	const CHALLENGE = '%|%|CHALLENGE|%|%';
+	var pubkeyFilepath = '';
+
+
+	function readFile(e) {
+		pubkeyFilepath = e.target.files[0];
+	}
+
+
+	async function logIn() {
+		if (pubkeyFilepath == '') {
+			alert('Must select a key');
+		}
+		else {
+			var reader = new FileReader();
+			reader.onload = async function(e) {
+				const username = $('#login-name').val();
+				const password = $('#login-pwd').val();
+				const digest = await msgDigest(password);
+				const contents = e.target.result;
+
+				const response = new Uint8Array(await window.crypto.subtle.encrypt(
+					{ name: 'RSA-OAEP' },
+					await getKey(contents.substring(26, contents.length - 25)),
+					new TextEncoder().encode(await msgDigest(CHALLENGE + digest) + username)
+				));
+				await function() {
+					return $.ajax({
+						type: 'POST',
+						url: '/login',
+						data: response,
+						success: function(data, status) {
+							window.location.replace(data);
+						},
+						contentType: 'application/octet-stream',
+						dataType: 'text',
+						processData: false
+					});
+				}();
+			};
+			reader.readAsText(pubkeyFilepath);
+		}
+	}
+	
+
+	function stringToArrayBuffer(str) {
+		const buf = new ArrayBuffer(str.length);
+		const bufView = new Uint8Array(buf);
+		for (let i = 0; i < str.length; ++i) {
+			bufView[i] = str.charCodeAt(i);
+		}
+		return buf;
+	}
+
+
+	async function getKey(contents) {
+		return await window.crypto.subtle.importKey(
+			'spki',
+			stringToArrayBuffer(window.atob(contents)),
+			{ name: 'RSA-OAEP', hash: 'SHA-256' },
+			true,
+			['encrypt']
+		);
+	}
+
+
+	async function msgDigest(pwd) {
+		const hash = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+		return Array.from(new Uint8Array(hash)).map((x) => x.toString(16).padStart(2, '0')).join('');
+	}
+</script>
+

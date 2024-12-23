@@ -1,10 +1,3 @@
--- Create and make active the yaba db
-
-CREATE DATABASE IF NOT EXISTS yaba;
-
-USE yaba;
-
-
 -- Create tables
 
 	-- Core tables

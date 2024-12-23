@@ -131,6 +131,15 @@ pub struct JobStructInc {
     pub JobID: u8,
 }
 
+#[derive(AsChangeset, Debug, Identifiable, Queryable, Selectable)]
+#[diesel(primary_key(Name))]
+#[diesel(table_name = crate::schema::Users)]
+pub struct UsersStruct {
+    pub Name: String,
+    pub Passkey: String,
+    pub BadAttempts: u8,
+}
+
 
 // Yaba transaction logging
 

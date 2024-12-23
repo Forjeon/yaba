@@ -4,13 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rocket = "0.5.1"
-diesel = { version = "2", features = ["numeric", "chrono"] }#"time"] }
+rocket = { version = "0.5.1", features = ["secrets"] }
+diesel = { version = "2", features = ["numeric", "chrono"] }
 diesel-derive-enum = { version = "2.1.0", features = ["mysql"] }
 bigdecimal = { version = "0.4.5", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 chrono = { version = "0.4.38", features = ["serde"] }
+openssl = "0.10.68"
+hex = "0.4.3"
+rand = "0.8.5"
+rsa = { version = "0.9.7", features = ["sha2"] }
+time = "0.3.37"
 
 [dependencies.rocket_db_pools]
 version = "0.2.0"

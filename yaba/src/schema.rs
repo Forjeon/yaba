@@ -125,6 +125,16 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    Users (Name) {
+        #[max_length = 20]
+        Name -> Varchar,
+        #[max_length = 64]
+        Passkey -> Char,
+        BadAttempts -> Unsigned<Tinyint>,
+    }
+}
+
 // Table joinability
 
 diesel::joinable!(CreditAccount -> PaymentAccount (AccountID));
@@ -150,4 +160,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     TransactionAccount,
     TransactionCategory,
     TransactionInstanceCategory,
+	//FIXME:UNCOMMENT?Users,
 );
+

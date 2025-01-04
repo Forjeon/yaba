@@ -42,18 +42,6 @@ pub struct TransCat {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(JobID))]
-#[diesel(table_name = crate::schema::Job)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct JobStruct {
-    pub JobID: u8,
-    pub JobName: String,
-    pub Wage: BigDecimal,
-    pub ExpectedMonthlyHours: u8,
-    pub ExpectedMonthlyMissHours: u8,
-}
-
-#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(primary_key(AccountID))]
 #[diesel(table_name = crate::schema::PaymentAccount)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
@@ -120,15 +108,6 @@ pub struct SavAcc {
     pub AccountID: u8,
     pub MinBalanceForRate: BigDecimal,
     pub InterestRate: BigDecimal,
-}
-
-#[derive(Debug, Queryable, Selectable, Serialize)]
-#[diesel(primary_key(CategoryID))]
-#[diesel(table_name = crate::schema::JobIncome)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
-pub struct JobStructInc {
-    pub CategoryID: u8,
-    pub JobID: u8,
 }
 
 #[derive(AsChangeset, Debug, Identifiable, Queryable, Selectable)]

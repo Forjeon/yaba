@@ -177,7 +177,7 @@ fn get_client_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<Ha
 fn get_compare_challenge(client_ip: &IpAddr, challenge_map_state: &State<Mutex<HashMap<IpAddr, (String, Instant)>>>) -> String {
 	let challenge_map = challenge_map_state.lock().unwrap();
 
-	if !challenge_map.contains_key(&client_ip) || challenge_map.get(&client_ip).unwrap().1.elapsed() > Duration::from_secs(20) {
+	if !challenge_map.contains_key(&client_ip) || challenge_map.get(&client_ip).unwrap().1.elapsed() > Duration::from_secs(60) {
 		generate_challenge(client_ip)
 	}
 	else {
@@ -377,21 +377,8 @@ async fn log_trans(_user: YabaAPIUser, mut db: Connection<Db>, data: String) -> 
 }
 
 
-// Security Plan DONE!
-// DONE!: user authentication:
-	// login page is sent with embedded nonce
-	// challenge response is pwd SHA256 digest concatenated with challenge and encrypted with yaba server public key
-	// nonce is time-based (derive from nondecreasing datum?) and expires after some short time (e.g. 10s?)
-	// submitted user (identified by username) is locked out permanently (must be reset on server by manually unlocking in user db) after three failed login attempts (failed attempts are reset after successful login)
-	// user session is tracked using Rust Rocket private cookies
-	// user session lasts for short period (e.g., 10min?) before API calls are ignored (and logged) and a redirect to the login page is requested
-	// valid user session private cookie must exist to access any endpoint other than login.html and login.css
-	// valid user session private cookie is created upon successful login and is requested by server to be destroyed after session expires
-
-
 // NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
 // NOTE: yaba could be vulnerable to browser switching on the same client IP / IP spoofing, as the only key into the challenge-response map is the client IP
-// NOTE: yaba login resists inference attacks by giving no warning or error details upon failed login, instead simply reloading the login page
 
 
 // Security attacks to defend against TODO:

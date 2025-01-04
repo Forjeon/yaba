@@ -39,17 +39,6 @@ diesel::table! {
     }
 }
 
-diesel::table! {
-    Job (JobID) {
-        JobID -> Unsigned<Tinyint>,
-        #[max_length = 50]
-        JobName -> Varchar,
-        Wage -> Decimal,
-        ExpectedMonthlyHours -> Unsigned<Tinyint>,
-        ExpectedMonthlyMissHours -> Unsigned<Tinyint>,
-    }
-}
-
 #[derive(diesel_derive_enum::DbEnum, Debug, Serialize)]
 pub enum AccountTypeEnum {
 	Debit,
@@ -119,13 +108,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    JobIncome (CategoryID) {
-        CategoryID -> Unsigned<Tinyint>,
-        JobID -> Unsigned<Tinyint>,
-    }
-}
-
-diesel::table! {
     Users (Name) {
         #[max_length = 20]
         Name -> Varchar,
@@ -140,8 +122,6 @@ diesel::table! {
 diesel::joinable!(CreditAccount -> PaymentAccount (AccountID));
 diesel::joinable!(ExpenseCategory -> TransactionCategory (CategoryID));
 diesel::joinable!(IncomeCategory -> TransactionCategory (CategoryID));
-diesel::joinable!(JobIncome -> IncomeCategory (CategoryID));
-diesel::joinable!(JobIncome -> Job (JobID));
 diesel::joinable!(SavingsAccount -> PaymentAccount (AccountID));
 diesel::joinable!(TransactionAccount -> PaymentAccount (AccountID));
 diesel::joinable!(TransactionAccount -> Transaction (TransactionID));
@@ -152,8 +132,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     CreditAccount,
     ExpenseCategory,
     IncomeCategory,
-    Job,
-    JobIncome,
     PaymentAccount,
     SavingsAccount,
     Transaction,

@@ -336,6 +336,10 @@ async fn get_trans_list(_user: YabaAPIUser, mut db: Connection<Db>) -> String {
 
 // POST requests
 
+//	Budget calculations
+// TODO: categories, expected, range value; credit accounts, (safe) limits, range balance; range profit
+
+
 //	Transaction logging
 #[post("/", format = "json", data = "<data>")]
 async fn log_trans(_user: YabaAPIUser, mut db: Connection<Db>, data: String) -> QueryResult<String> {
@@ -377,27 +381,14 @@ async fn log_trans(_user: YabaAPIUser, mut db: Connection<Db>, data: String) -> 
 }
 
 
-// NOTE: demo users are "Alice":"P@ssw0rd1" and "bob":"asdf;lkj"
+//	Transaction list filtering/sorting
+// TODO
+
+
 // NOTE: yaba could be vulnerable to browser switching on the same client IP / IP spoofing, as the only key into the challenge-response map is the client IP
 
 
-// Security attacks to defend against TODO:
-// TODO: MITM and eavesdrop
-	// Solve with: hash passwords for transmitting and storing in user db
-// TODO: Masquerade
-	// Solve with: only give out server public key directly from server (not through API, must have direct local access to server), then use public-key encryption for challenge-response login
-// TODO: Host attacks (plaintext theft, dictionary search)
-	// Solve with: transmit and store only password hashes; use good password practices
-// TODO: Replay
-	// Solve with: login nonce is time-based (10s max?)
-// TODO: specific account attack
-	// Solve with: permanent lockout after 3 attempts (can be undone from within server, maybe as a bool in user db?)
-
-
 // Security remidiation TODO:
-// TODO: user authentication
-	// login page will accept username and password simultaneously without any intermediate communication with backend before challenge response; embed challenge in login page somehow?
-	// User session will only last ten minutes, after which the page is reloaded and should redirect to login page
 // TODO: extract interface code to backend
 // TODO: revamp REST APIs for cleaner and more controlled access
 	// Send ints and other rigid types as much as possible, heavily validate and sanitize string input (desc, etc.)

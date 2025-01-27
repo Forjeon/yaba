@@ -30,8 +30,8 @@
 
 				<!-- Presets and apply buttons -->
 				<div>
-					<button type="button" onclick="setBudgetToCurrMonth();">Current Month</button>
-					<button type="button" onclick="setBudgetToCurrYear();">Current Year</button>
+					<button type="button" onclick="setBudgetRangeToCurrMonth();">Current Month</button>
+					<button type="button" onclick="setBudgetRangeToCurrYear();">Current Year</button>
 					<button type="button" onclick="populateBudget();">View Report</button>
 				</div>
 			</div>
@@ -243,6 +243,11 @@
 <script>
 	// Budget report functions
 	function setBudgetRangeToCurrMonth() {
+		let firstOfThisMonth = new Date(Date.now());
+		firstOfThisMonth.setDate(1);
+		//FIXME:JS WEIRDNESS IS BLOCKING THIS FROM WORKING; FIX THIS!!!
+		$('#budget-start-date').val(firstOfThisMonth);
+		$('#budget-end-date').val(Date.now());
 	}
 
 
@@ -251,6 +256,32 @@
 
 
 	async function populateBudget() {
+		// Verify values
+		$budgetStartDate = $('#budget-start-date').val();
+		$budgetEndDate = $('#budget-end-date').val();
+		if ($budgetStartDate == '') {
+			alert('Must enter budget report start date');
+		}
+		else if ($budgetEndDate == '') {
+			alert('Must enter budget report end date');
+		}
+		else if ($budgetEndDate < $budgetStartDate) {
+			alert('Budget report end date must be on or after start date');
+		}
+		else {
+			await function() {
+				return $.ajax({
+					type: 'POST',
+					url: '/budget',
+					data: JSON.stringify({start: $budgetStartDate, end: $budgetEndDate}),
+					success: function(data, status) {
+						alert('Data: ' + data + '\nStatus: ' + status);
+					},
+					contentType: 'application/json',
+					dataType: 'json'
+				});
+			}();
+		}
 	}
 
 

@@ -338,6 +338,10 @@ async fn get_trans_list(_user: YabaAPIUser, mut db: Connection<Db>) -> String {
 
 //	Budget calculations
 // TODO: categories, expected, range value; credit accounts, (safe) limits, range balance; range profit
+#[post("/", format = "json", data = "<data>")]
+//FIXME:UNCOMMENTasync fn report_budget(_user: YabaAPIUser, mut db: Connection<Db>, data: String) -> QueryResult<String> {
+async fn report_budget(_user: YabaAPIUser, mut db: Connection<Db>, data: String) -> String {
+}
 
 
 //	Transaction logging

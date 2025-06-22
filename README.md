@@ -1,21 +1,19 @@
 # yaba
-Repo for Yaba (Yet Another Budgeting App), which doubles as my semester project for UVU CS3100 (nice!)
-![](https://img.shields.io/badge/Rust-E33B26)
-![](https://img.shields.io/badge/Rocket-D33847)
-![](https://img.shields.io/badge/Diesel-FF2626)
+
+LOGO HERE
+
+**Yet Another Budgeting App**
+
+![](https://img.shields.io/badge/Rust-1.83.0-E33B26)
+![](https://img.shields.io/badge/Rocket-0.5.1-D33847)
+![](https://img.shields.io/badge/Diesel-2-FF2626)
 ![](https://img.shields.io/badge/MySQL-00618A)
+![](https://img.shields.io/badge/HTML-E54D26)
+![](https://img.shields.io/badge/CSS-663398)
+![](https://img.shields.io/badge/JavaScript-E5D24C)
+![](https://img.shields.io/badge/jQuery-3.7.1-0968AC)
 
-
-
-STYLE GUIDE SUGGESTIONS: active voice, second person "you" to address reader, consistent terminology and naming conventions, correct spelling and grammar, 3-5 sentence paragraphs, use of text formatting (bold, lists, visual dividers, headers, whitespace), optimize for skimmability
-
-GOOD README EXAMPLES: FreeCodeCamp, Bootstrap, React, 
-
-
-Introduction
-	Title and logo
-	Brief description (explanation, what it solves, why its useful)
-	Tech stack and etc. badges (shields.io)
+DESCRIPTION HERE (explanation, what it solves, why its useful).
 
 Table of contents
 
@@ -40,10 +38,14 @@ Contribution
 	Deploying / publishing
 	Testing guide
 
-License
+## License
 
-Authors and acknowledgments
+Copyright 2025 Jonathan Forsgren
 
-FAQ
+This project is licensed under the [MIT license](https://github.com/Forjeon/yaba/blob/main/LICENSE).
 
-Contact
+
+
+STYLE GUIDE SUGGESTIONS: active voice, second person "you" to address reader, consistent terminology and naming conventions, correct spelling and grammar, 3-5 sentence paragraphs, use of text formatting (bold, lists, visual dividers, headers, whitespace), optimize for skimmability
+
+GOOD README EXAMPLES: FreeCodeCamp, Bootstrap, React, 

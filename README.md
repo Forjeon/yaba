@@ -1,6 +1,9 @@
 # yaba
 Repo for Yaba (Yet Another Budgeting App), which doubles as my semester project for UVU CS3100 (nice!)
-![Static Badge](https://img.shields.io/badge/any_text-you_like-blue)
+![](https://img.shields.io/badge/Rust-E33B26)
+![](https://img.shields.io/badge/Rocket-D33847)
+![](https://img.shields.io/badge/Diesel-FF2626)
+![](https://img.shields.io/badge/MySQL-00618A)
 
 
 

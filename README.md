@@ -1,17 +1,17 @@
 # yaba
 
-LOGO HERE
+![Yaba logo](https://github.com/Forjeon/yaba/blob/main/yaba/webpages/favicon.svg)
 
 **Yet Another Budgeting App**
 
-![](https://img.shields.io/badge/Rust-1.83.0-E33B26)
-![](https://img.shields.io/badge/Rocket-0.5.1-D33847)
-![](https://img.shields.io/badge/Diesel-2-FF2626)
-![](https://img.shields.io/badge/MySQL-00618A)
-![](https://img.shields.io/badge/HTML-E54D26)
-![](https://img.shields.io/badge/CSS-663398)
-![](https://img.shields.io/badge/JavaScript-E5D24C)
-![](https://img.shields.io/badge/jQuery-3.7.1-0968AC)
+![Rust 1.83.0 badge](https://img.shields.io/badge/Rust-1.83.0-E33B26)
+![Rocket 0.5.1 badge](https://img.shields.io/badge/Rocket-0.5.1-D33847)
+![Diesel 2.2.5 badge](https://img.shields.io/badge/Diesel-2.2.5-FF2626)
+![MySQL badge](https://img.shields.io/badge/MySQL-00618A)
+![HTML badge](https://img.shields.io/badge/HTML-E54D26)
+![CSS badge](https://img.shields.io/badge/CSS-663398)
+![JavaScript badge](https://img.shields.io/badge/JavaScript-E5D24C)
+![jQuery 3.7.1 badge](https://img.shields.io/badge/jQuery-3.7.1-0968AC)
 
 DESCRIPTION HERE (explanation, what it solves, why its useful).
 

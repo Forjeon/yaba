@@ -1,6 +1,6 @@
 # yaba
 
-![Yaba logo](https://github.com/Forjeon/yaba/blob/main/yaba/webpages/favicon.svg)
+<img src="https://github.com/Forjeon/yaba/blob/main/yaba/webpages/favicon.svg" alt="yaba logo" width="100"/>
 
 **Yet Another Budgeting App**
 

@@ -15,28 +15,70 @@
 
 DESCRIPTION HERE (explanation, what it solves, why its useful).
 
-Table of contents
+---
 
-Getting started
-	Installation prereqs and dependencies
-	Installation instructions
-	Initial configuration (keys, access tokens, etc.)
-	configuration instructions
+[ToC links here]()
 
-Usage
-	Features
-	Architecture overview
-	Code examples
-	API guide
+---
 
-Contribution
-	Contribution guidelines
-	Code of conduct
-	How to get started
-	Prereqs
-	Building
-	Deploying / publishing
-	Testing guide
+## Getting Started
+
+TODO
+
+### Prerequisites and Dependencies
+
+TODO
+
+### Installation
+
+TODO
+
+### Configuration
+
+TODO
+
+
+## Usage
+
+TODO
+
+### Features
+
+TODO
+
+### Architecture Overview
+
+TODO
+
+### Code Examples
+
+TODO
+
+### API Guide
+
+TODO
+
+
+## Contribution
+
+TODO
+
+### Guidelines
+
+TODO
+
+### Code of Conduct
+
+TODO
+
+### Prerequisites
+
+TODO
+
+### Building
+
+TODO
+
 
 ## License
 

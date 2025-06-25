@@ -13,7 +13,7 @@
 ![JavaScript badge](https://img.shields.io/badge/JavaScript-E5D24C)
 ![jQuery 3.7.1 badge](https://img.shields.io/badge/jQuery-3.7.1-0968AC)
 
-Yaba is a minimalist personal budget and finance tracking webapp. Originally, it was created as an undergrad project, but has since been improved upon for daily use in its intended function. Yaba aims to reduce feature bloat and ensure data security of financial data through its privately hosted design.
+Yaba is a minimalist personal budget and finance tracking webapp. Originally created as an undergrad project, yaba has since been improved upon for daily use in its intended function. Yaba aims to reduce feature bloat and ensure security of financial data through its privately hosted design.
 
 ---
 
@@ -39,11 +39,13 @@ Yaba is a minimalist personal budget and finance tracking webapp. Originally, it
 
 ## Getting Started
 
-TODO
+The yaba backend (Rust + Rocket) is hosted on a device of your choice and connected to a MySQL database using the Diesel migrations. At least one user profile must be created in the linked db. Then, while the yaba backend server is running, any web-capable device can access the yaba webapp to log and view budget/finance tracking data.
 
 ### Prerequisites and Dependencies
 
-TODO
+The yaba frontend is written in modern HTML, CSS, and JavaScript (plus jQuery). Thus, the frontend should be compatible with most any modern browser (tested and designed on qutebrowser and Vivaldi/Chrome).
+
+The yaba backend server is available as a variety of [64-bit OS binaries LINK TODO]() for a variety of OSes and architectures. Yaba also requires an active [MySQL server LINK TODO]() instance to host the webapp db. [Nginx LINK TODO]() is recommended as the reverse proxy for securing and configuring port forwarding of the yaba server.
 
 ### Installation
 
@@ -82,6 +84,8 @@ TODO
 ### Prerequisites
 
 TODO
+
+The yaba backend uses [Rust](https://www.rust-lang.org/tools/install) 1.83.0 with the [Rocket LINK TODO]() 0.5.1 and [Diesel LINK TODO]() 2.2.5 libraries, and requires an active [MySQL server LINK TODO]() instance to host the webapp db. [Nginx LINK TODO]() is also recommended as the reverse proxy to protect and configure port forwarding for the yaba server.
 
 ### Architecture Overview
 

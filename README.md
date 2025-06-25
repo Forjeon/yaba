@@ -13,11 +13,27 @@
 ![JavaScript badge](https://img.shields.io/badge/JavaScript-E5D24C)
 ![jQuery 3.7.1 badge](https://img.shields.io/badge/jQuery-3.7.1-0968AC)
 
-DESCRIPTION HERE (explanation, what it solves, why its useful).
+Yaba is a minimalist personal budget and finance tracking webapp. Originally, it was created as an undergrad project, but has since been improved upon for daily use in its intended function. Yaba aims to reduce feature bloat and ensure data security of financial data through its privately hosted design.
 
 ---
 
-[ToC links here]()
+[Getting Started](#getting-started)
+[Prerequisites and Dependencies](#prerequisites-and-dependencies)
+[Installation](#installation)
+[Configuration](#configuration)
+
+[Usage](#usage)
+[Features](#features)
+[API Guide](#api-guide)
+
+[Contribution](#contribution)
+[Guidelines](#guidelines)
+[Code of Conduct](#code-of-conduct)
+[Prerequisites](#prerequisites)
+[Architecture Overview](#architecture-overview)
+[Building](#building)
+
+[License](#license)
 
 ---
 
@@ -46,14 +62,6 @@ TODO
 
 TODO
 
-### Architecture Overview
-
-TODO
-
-### Code Examples
-
-TODO
-
 ### API Guide
 
 TODO
@@ -72,6 +80,10 @@ TODO
 TODO
 
 ### Prerequisites
+
+TODO
+
+### Architecture Overview
 
 TODO
 

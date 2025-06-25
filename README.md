@@ -18,21 +18,31 @@ Yaba is a minimalist personal budget and finance tracking webapp. Originally, it
 ---
 
 [Getting Started](#getting-started)
+
 &ensp;[Prerequisites and Dependencies](#prerequisites-and-dependencies)
+
 &ensp;[Installation](#installation)
+
 &ensp;[Configuration](#configuration)
 
 
 [Usage](#usage)
+
 &ensp;[Features](#features)
+
 &ensp;[API Guide](#api-guide)
 
 
 [Contribution](#contribution)
+
 &ensp;[Guidelines](#guidelines)
+
 &ensp;[Code of Conduct](#code-of-conduct)
+
 &ensp;[Prerequisites](#prerequisites)
+
 &ensp;[Architecture Overview](#architecture-overview)
+
 &ensp;[Building](#building)
 
 

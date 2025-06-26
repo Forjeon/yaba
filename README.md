@@ -45,7 +45,7 @@ The yaba backend (Rust + Rocket) is hosted on a device of your choice and connec
 
 The yaba frontend is written in modern HTML, CSS, and JavaScript (plus jQuery). Thus, the frontend should be compatible with most any modern browser (tested and designed on qutebrowser and Vivaldi/Chrome).
 
-The yaba backend server is available as a variety of [64-bit OS binaries LINK TODO]() for a variety of OSes and architectures. Yaba also requires an active [MySQL server LINK TODO]() instance to host the webapp db. [Nginx LINK TODO]() is recommended as the reverse proxy for securing and configuring port forwarding of the yaba server.
+Currently, the yaba backend server is only available as a [64-bit Linux binary LINK TODO](), and has only been tested on Ubuntu 22+. Feel free to clone and build binaries for other platforms as you see fit. Yaba also requires an active [MySQL server LINK TODO]() instance to host the webapp db. [Nginx LINK TODO]() is recommended as the reverse proxy for securing and configuring port forwarding of the yaba server.
 
 ### Installation
 

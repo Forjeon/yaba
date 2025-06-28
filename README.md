@@ -27,10 +27,7 @@ Yaba is a minimalist personal budget and finance tracking webapp. Originally cre
 [API Guide](#api-guide)  
 
 [Contribution](#contribution)  
-[Guidelines](#guidelines)  
-[Code of Conduct](#code-of-conduct)  
 [Prerequisites](#prerequisites)  
-[Architecture Overview](#architecture-overview)  
 [Building](#building)  
 
 [License](#license)  
@@ -71,29 +68,15 @@ TODO
 
 ## Contribution
 
-TODO
-
-### Guidelines
-
-TODO
-
-### Code of Conduct
-
-TODO
+At this time, yaba (Rust) is deprecated in favor of [yaba.NET LINK TODO](). You may clone, fork, and otherwise make use of this project and repository to your liking; pull requests and other changes to this repository are not being accepted at this time.
 
 ### Prerequisites
 
-TODO
-
 The yaba backend uses [Rust](https://www.rust-lang.org/tools/install) 1.83.0 with the [Rocket LINK TODO]() 0.5.1 and [Diesel LINK TODO]() 2.2.5 libraries, and requires an active [MySQL server LINK TODO]() instance to host the webapp db. [Nginx LINK TODO]() is also recommended as the reverse proxy to protect and configure port forwarding for the yaba server.
-
-### Architecture Overview
-
-TODO
 
 ### Building
 
-TODO
+The yaba backend server is built using cargo 1.83.0.
 
 
 ## License

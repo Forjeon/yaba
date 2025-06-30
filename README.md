@@ -55,11 +55,13 @@ TODO
 After yaba has been correctly installed, you must run the Diesel migrations to set up the connection with the yaba db. You can learn more about Diesel migration usage [here](https://diesel.rs/guides/getting-started.html).
 
 Once the yaba db has been initialized with Diesel, you must register at least one user account in the `Users` table. Below is the schema for the `Users` table:  
+
 `
-Name VARCHAR(20) NOT NULL PRIMARY KEY,
-Passkey CHAR(64) NOT NULL,
-BadAttempts TINYINT UNSIGNED NOT NULL
+Name VARCHAR(20) NOT NULL PRIMARY KEY,  
+Passkey CHAR(64) NOT NULL,  
+BadAttempts TINYINT UNSIGNED NOT NULL  
 `  
+
 The `Name` column is the username for the registered user and the `Passkey` is the SHA-256 hash of their password. `BadAttempts` is a column automatically managed by yaba to handle user lockout after a set number of failed login attempts with that username.
 
 Yaba makes use of RSA encryption as part of its challenge-response authentication protocol. You must create an RSA keypair and store the private key in PEM format in the same directory in which the `src/` code directory sits. The public key must be given to each validated user for them to use when authenticating a yaba login.

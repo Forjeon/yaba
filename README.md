@@ -56,11 +56,11 @@ After yaba has been correctly installed, you must run the Diesel migrations to s
 
 Once the yaba db has been initialized with Diesel, you must register at least one user account in the `Users` table. Below is the schema for the `Users` table:  
 
-`
-Name VARCHAR(20) NOT NULL PRIMARY KEY,  
-Passkey CHAR(64) NOT NULL,  
-BadAttempts TINYINT UNSIGNED NOT NULL  
-`  
+```sql
+Name VARCHAR(20) NOT NULL PRIMARY KEY,
+Passkey CHAR(64) NOT NULL,
+BadAttempts TINYINT UNSIGNED NOT NULL
+```  
 
 The `Name` column is the username for the registered user and the `Passkey` is the SHA-256 hash of their password. `BadAttempts` is a column automatically managed by yaba to handle user lockout after a set number of failed login attempts with that username.
 
